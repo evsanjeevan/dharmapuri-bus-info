@@ -1,0 +1,17 @@
+# DPI One — Dharmapuri Bus Information
+
+User-agent: *
+Allow: /
+
+# Private / user areas
+Disallow: /account
+Disallow: /upload
+
+# Administrative / internal paths
+Disallow: /admin/
+Disallow: /api/
+Disallow: /login/
+Disallow: /signup/
+
+# Sitemap
+Sitemap: https://YOUR-DOMAIN.com/sitemap.xml
