@@ -1,8 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import font206 from "./assets/10_உழவன் தமிழ்.TTF";
-import tamilFont from "./assets/10_உழவன் தமிழ்.TTF";
+import font206 from "./assets/10_உழவன் தமிழ்.ttf";
+import tamilFont from "./assets/10_உழவன் தமிழ்.ttf";
 
 const Disclaimer = ({ isDark = false }) => {
   const navigate = useNavigate();
