@@ -17,6 +17,7 @@ import { onAuthStateChanged } from "firebase/auth";
 
 import BusResultCard from "./BusResultCard.jsx";
 import BusStoppingCard from "./BusStoppingCard.jsx";
+import noBusImage from "./assets/i dont know.png";
 
 /* =========================================================
    TIMING OPTIONS
@@ -213,7 +214,7 @@ const DpiToggle = ({
    HOMEPAGE
 ========================================================= */
 
-const HomePage = () => {
+const HomePage = ({ isDark = false }) => {
   /* -------------------------------------------------------
      AUTH
   ------------------------------------------------------- */
@@ -295,46 +296,6 @@ const HomePage = () => {
 
   const [isEnabled, setIsEnabled] =
     useState(false);
-
-  /* -------------------------------------------------------
-     THEME SYNC
-     Watches the app-level dark class so HomePage updates
-     immediately without changing the existing DPI toggle CSS.
-  ------------------------------------------------------- */
-
-  const [isDarkMode, setIsDarkMode] = useState(() =>
-    typeof document !== "undefined" &&
-    (
-      document.documentElement.classList.contains("dark") ||
-      document.body?.classList.contains("dark")
-    )
-  );
-
-  useEffect(() => {
-    if (typeof document === "undefined") return undefined;
-
-    const readTheme = () =>
-      document.documentElement.classList.contains("dark") ||
-      document.body.classList.contains("dark");
-
-    const syncTheme = () => setIsDarkMode(readTheme());
-
-    syncTheme();
-
-    const observer = new MutationObserver(syncTheme);
-
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    observer.observe(document.body, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
 
   /* -------------------------------------------------------
      FORM REF
@@ -507,7 +468,7 @@ const HomePage = () => {
       busNumber.trim().toLowerCase();
 
     if (!value) {
-      return allBusNumbers.slice(0, 7);
+      return [];
     }
 
     return allBusNumbers
@@ -989,7 +950,7 @@ const HomePage = () => {
 
   if (isFetching) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F7F8FC] dark:bg-[#0F172A] px-6 font-[Montserrat,sans-serif] text-[#111827] dark:text-white">
+      <div className={`${isDark ? "dark" : ""} flex min-h-screen items-center justify-center bg-[#F7F8FC] dark:bg-[#0F172A] px-6 font-[Montserrat,sans-serif] text-[#111827] dark:text-white`}>
         <div className="flex flex-col items-center gap-4 text-center">
           <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#ECE9FF] border-t-[#7667E8]" />
 
@@ -1007,7 +968,7 @@ const HomePage = () => {
 
   if (fetchError) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F7F8FC] dark:bg-[#0F172A] px-6 font-[Montserrat,sans-serif]">
+      <div className={`${isDark ? "dark" : ""} flex min-h-screen items-center justify-center bg-[#F7F8FC] dark:bg-[#0F172A] px-6 font-[Montserrat,sans-serif]`}>
         <div className="w-full max-w-sm rounded-3xl border border-[#E7E7EF] dark:border-[#30384A] bg-white dark:bg-[#1B2230] p-8 text-center shadow-[0_12px_40px_rgba(17,24,39,0.08)]">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 dark:bg-red-950/30 text-red-500 dark:text-red-400">
             <i className="bi bi-wifi-off text-2xl" />
@@ -1040,7 +1001,7 @@ const HomePage = () => {
   ====================================================== */
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#F7F8FC] dark:bg-[#0F172A] font-[Montserrat,sans-serif] text-[#111827] dark:text-white">
+    <div className={`${isDark ? "dark" : ""} min-h-screen overflow-x-hidden bg-[#F7F8FC] dark:bg-[#0F172A] font-[Montserrat,sans-serif] text-[#111827] dark:text-white`}>
       <main>
 
         {/* =====================================================
@@ -1108,9 +1069,6 @@ const HomePage = () => {
                 </div>
               </div>
 
-              <div className="hidden rounded-full bg-[#F7F8FC] dark:bg-[#0F172A] px-2.5 py-1.5 text-[10px] font-extrabold text-[#8B93A3] dark:text-[#9CA3AF] sm:block">
-                {buses.length} approved services
-              </div>
             </div>
 
             {/* ERROR */}
@@ -1159,16 +1117,20 @@ const HomePage = () => {
                     inputMode="text"
                     aria-autocomplete="list"
                     placeholder="Enter bus number"
-                    onFocus={() =>
-                      setActiveInput("bus")
-                    }
+                    onFocus={() => {
+                      if (busNumber.trim()) {
+                        setActiveInput("bus");
+                      } else {
+                        setActiveInput(null);
+                      }
+                    }}
                     onChange={(event) => {
-                      setBusNumber(
-                        sanitizeBusNo(
-                          event.target.value
-                        )
+                      const nextValue = sanitizeBusNo(
+                        event.target.value
                       );
 
+                      setBusNumber(nextValue);
+                      setActiveInput(nextValue ? "bus" : null);
                       setValidationError("");
                     }}
                     className="h-12 w-full rounded-xl border border-[#E7E7EF] dark:border-[#30384A] bg-white dark:bg-[#1B2230] pl-14 pr-4 text-sm font-extrabold uppercase tracking-wide text-[#111827] dark:text-white outline-none transition placeholder:font-semibold placeholder:normal-case placeholder:tracking-normal placeholder:text-[#A3A8B5] dark:placeholder:text-[#727A8D] hover:border-[#DDD8FA] focus:border-[#7667E8] focus:bg-[#FCFBFF] dark:focus:bg-[#211F31] focus:ring-4 focus:ring-[#7667E8]/[0.08]"
@@ -1824,7 +1786,7 @@ const HomePage = () => {
                             seats={
                               route.seats
                             }
-                            isDark={isDarkMode}
+                            isDark={isDark}
                             isMinimal={
                               !expanded
                             }
@@ -1837,9 +1799,7 @@ const HomePage = () => {
                               stops={
                                 route.stops
                               }
-                              isDark={
-                                false
-                              }
+                              isDark={isDark}
                             />
                           </div>
                         )}
@@ -1867,9 +1827,13 @@ const HomePage = () => {
             ) : (
               <div className="rounded-[22px] border border-[#E7E7EF] dark:border-[#30384A] bg-white dark:bg-[#1B2230] px-6 py-12 text-center shadow-[0_8px_28px_rgba(17,24,39,0.04)]">
 
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#F4F2FF] dark:bg-[#211C3A] text-2xl text-[#7667E8]">
-                  <i className="bi bi-bus-front" />
-                </div>
+                <img
+                  src={noBusImage}
+                  alt="No bus found"
+                  className="mx-auto h-auto w-full max-w-[260px] object-contain"
+                  loading="lazy"
+                  draggable="false"
+                />
 
                 <h3 className="mt-4 text-base font-extrabold text-[#111827] dark:text-white">
                   No Bus Found
