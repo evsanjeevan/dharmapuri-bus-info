@@ -91,6 +91,19 @@ const sanitizeRouteNumber = (value) => {
 };
 
 
+const sanitizeTime = (value) => {
+    if (typeof value !== "string") {
+        return "";
+    }
+
+    const clean = value.trim();
+
+    return /^([01]\d|2[0-3]):[0-5]\d$/.test(clean)
+        ? clean
+        : "";
+};
+
+
 const parseSafeNumber = (
     value,
     min,
@@ -424,7 +437,10 @@ function formReducer(
             return {
                 ...state,
                 [action.field]:
-                    action.value
+                    action.field === "departureTime" ||
+                    action.field === "arrivalTime"
+                        ? sanitizeTime(action.value)
+                        : action.value
             };
 
 
@@ -1576,7 +1592,36 @@ const UploadPage = ({
                 `}
             >
 
-                <div className="dpi-upload-auth-card">
+                                <style>{`
+                    .dpi-upload-page {
+                        --dpi-primary: #6D5CE7;
+                        --dpi-primary-light: #F1EFFC;
+                        --dpi-text: #17162A;
+                        --dpi-secondary: #5B5A6E;
+                        --dpi-bg: #FBFBFD;
+                        --dpi-surface: #FFFFFF;
+                        --dpi-border: #EAE9F1;
+                        min-height: 100%; width: 100%; box-sizing: border-box;
+                        background: var(--dpi-bg); color: var(--dpi-text);
+                        padding: 28px 18px 100px;
+                        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                    }
+                    .dpi-upload-page-dark {
+                        --dpi-bg: #0D0C14; --dpi-surface: #15141E; --dpi-border: #292735;
+                        --dpi-text: #F8F7FC; --dpi-secondary: #C3C0D0;
+                    }
+                    .dpi-upload-auth-card {
+                        width: min(430px, 100%); margin: 16vh auto 0; text-align: center;
+                        background: var(--dpi-surface); color: var(--dpi-text);
+                        border: 1px solid var(--dpi-border); border-radius: 22px; padding: 34px 24px;
+                        box-shadow: 0 18px 50px rgba(28,22,66,.07);
+                    }
+                    .dpi-upload-auth-card h2 { margin: 0 0 8px; color: var(--dpi-text); font-size: 22px; line-height: 1.15; font-weight: 900; }
+                    .dpi-upload-auth-card p { margin: 0; color: var(--dpi-secondary); font-size: 13px; line-height: 1.6; font-weight: 600; }
+                    .dpi-upload-auth-icon { width:72px; height:72px; border-radius:50%; margin:0 auto 17px; display:flex; align-items:center; justify-content:center; font-size:26px; color:var(--dpi-primary); background:var(--dpi-primary-light); }
+                `}</style>
+
+<div className="dpi-upload-auth-card">
 
                     <div className="dpi-upload-auth-icon">
 
@@ -1629,7 +1674,36 @@ const UploadPage = ({
                 `}
             >
 
-                <div className="dpi-upload-auth-card">
+                                <style>{`
+                    .dpi-upload-page {
+                        --dpi-primary: #6D5CE7;
+                        --dpi-primary-light: #F1EFFC;
+                        --dpi-text: #17162A;
+                        --dpi-secondary: #5B5A6E;
+                        --dpi-bg: #FBFBFD;
+                        --dpi-surface: #FFFFFF;
+                        --dpi-border: #EAE9F1;
+                        min-height: 100%; width: 100%; box-sizing: border-box;
+                        background: var(--dpi-bg); color: var(--dpi-text);
+                        padding: 28px 18px 100px;
+                        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                    }
+                    .dpi-upload-page-dark {
+                        --dpi-bg: #0D0C14; --dpi-surface: #15141E; --dpi-border: #292735;
+                        --dpi-text: #F8F7FC; --dpi-secondary: #C3C0D0;
+                    }
+                    .dpi-upload-auth-card {
+                        width: min(430px, 100%); margin: 16vh auto 0; text-align: center;
+                        background: var(--dpi-surface); color: var(--dpi-text);
+                        border: 1px solid var(--dpi-border); border-radius: 22px; padding: 34px 24px;
+                        box-shadow: 0 18px 50px rgba(28,22,66,.07);
+                    }
+                    .dpi-upload-auth-card h2 { margin: 0 0 8px; color: var(--dpi-text); font-size: 22px; line-height: 1.15; font-weight: 900; }
+                    .dpi-upload-auth-card p { margin: 0; color: var(--dpi-secondary); font-size: 13px; line-height: 1.6; font-weight: 600; }
+                    .dpi-upload-auth-icon { width:72px; height:72px; border-radius:50%; margin:0 auto 17px; display:flex; align-items:center; justify-content:center; font-size:26px; color:var(--dpi-primary); background:var(--dpi-primary-light); }
+                `}</style>
+
+<div className="dpi-upload-auth-card">
 
                     <div
                         className="
@@ -2219,6 +2293,29 @@ const UploadPage = ({
                         start;
                 }
 
+
+                .dpi-upload-input[type="time"] {
+                    min-width: 0; color-scheme: light; font-variant-numeric: tabular-nums;
+                }
+                .dpi-upload-page-dark .dpi-upload-input[type="time"] { color-scheme: dark; }
+                .dpi-upload-input[type="time"]::-webkit-datetime-edit,
+                .dpi-upload-input[type="time"]::-webkit-datetime-edit-text,
+                .dpi-upload-input[type="time"]::-webkit-datetime-edit-hour-field,
+                .dpi-upload-input[type="time"]::-webkit-datetime-edit-minute-field,
+                .dpi-upload-input[type="time"]::-webkit-datetime-edit-ampm-field {
+                    color: var(--dpi-text); font-weight: 800; opacity: 1;
+                }
+                .dpi-upload-input[type="time"]::-webkit-calendar-picker-indicator { opacity: .75; cursor: pointer; }
+                .dpi-upload-page-dark .dpi-upload-input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); }
+
+                .dpi-upload-time-field { position: relative; }
+                .dpi-upload-time-field::after {
+                    content: attr(data-time-placeholder); position:absolute; left:13px; top:50%; transform:translateY(-50%);
+                    color:var(--dpi-muted); font-size:13px; font-weight:700; pointer-events:none; display:none;
+                }
+                .dpi-upload-time-field.dpi-upload-time-empty::after { display:block; }
+                .dpi-upload-time-field.dpi-upload-time-empty .dpi-upload-input[type="time"] { color:transparent; }
+                .dpi-upload-time-field.dpi-upload-time-empty .dpi-upload-input[type="time"]::-webkit-datetime-edit { color:transparent; }
 
                 /* =============================================================
                    ROUTE NOTE
@@ -4202,7 +4299,12 @@ const UploadPage = ({
 
 
                                             {/* TIME */}
-                                            <div>
+                                            <div
+                                                className={`dpi-upload-time-field ${
+                                                    !stop.time ? "dpi-upload-time-empty" : ""
+                                                }`}
+                                                data-time-placeholder="Select time"
+                                            >
 
                                                 <input
                                                     type="time"
@@ -4227,7 +4329,9 @@ const UploadPage = ({
                                                                 field:
                                                                     "time",
                                                                 value:
-                                                                    event.target.value
+                                                                    sanitizeTime(
+                                                                        event.target.value
+                                                                    )
                                                             })
                                                     }
                                                 />

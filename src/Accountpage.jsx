@@ -7,8 +7,6 @@ import React, {
 
 import { useNavigate } from 'react-router-dom';
 
-import deleteImage from './assets/delete.png';
-
 import { auth, db } from './firebase.jsx';
 
 import {
@@ -18,7 +16,6 @@ import {
     GoogleAuthProvider,
     signOut,
     onAuthStateChanged,
-    sendEmailVerification,
     sendPasswordResetEmail,
     deleteUser,
     reauthenticateWithCredential,
@@ -33,7 +30,6 @@ import {
 import {
     doc,
     setDoc,
-    updateDoc,
     deleteDoc,
     collection,
     query,
@@ -44,22 +40,48 @@ import {
 
 
 // ─────────────────────────────────────────────────────────────────────────────
-// HELPERS
+// HELPERS — VALIDATION / NORMALIZATION
 // ─────────────────────────────────────────────────────────────────────────────
 
-const sanitizeText = (str) =>
-    typeof str === 'string'
-        ? str.replace(/[<>"'`]/g, '').trim()
+const sanitizeText = (value, maxLength = 60) => {
+    if (typeof value !== 'string') return '';
+
+    return value
+        .replace(/[\u0000-\u001F\u007F<>"'`]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, maxLength);
+};
+
+const normalizeEmail = (value) =>
+    typeof value === 'string'
+        ? value.trim().toLowerCase().slice(0, 254)
         : '';
 
+const validateEmail = (value) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(value);
+
 const validateName = (name) =>
-    /^[a-zA-Z\u0B80-\u0BFF\s'-]{1,50}$/.test(name.trim());
+    /^[a-zA-Z\u0B80-\u0BFF\s'-]{1,50}$/.test(
+        sanitizeText(name, 50)
+    );
 
 const validatePassword = (password) =>
+    typeof password === 'string' &&
     password.length >= 8 &&
+    password.length <= 128 &&
     /[A-Z]/.test(password) &&
     /[0-9]/.test(password) &&
     /[^A-Za-z0-9]/.test(password);
+
+const getProviderIds = (user) =>
+    Array.from(
+        new Set(
+            (user?.providerData || [])
+                .map((provider) => provider?.providerId)
+                .filter(Boolean)
+        )
+    );
 
 const extractName = (
     displayName,
@@ -109,6 +131,24 @@ const getFriendlyError = (code) => {
 
         'auth/requires-recent-login':
             'Please sign in again before performing this action.',
+
+        'auth/credential-already-in-use':
+            'This credential is already linked to another account.',
+
+        'auth/operation-not-allowed':
+            'This sign-in method is currently unavailable.',
+
+        'auth/popup-blocked':
+            'Your browser blocked the sign-in popup. Please allow popups and try again.',
+
+        'auth/popup-in-progress':
+            'A sign-in popup is already open.',
+
+        'auth/cancelled-popup-request':
+            'Another sign-in request is already in progress.',
+
+        'permission-denied':
+            'You do not have permission to perform this action.',
 
         'auth/popup-closed-by-user':
             'Google sign-in was cancelled.',
@@ -253,6 +293,38 @@ const Toast = ({
 
 
 // ─────────────────────────────────────────────────────────────────────────────
+// GOOGLE LOGO
+// ─────────────────────────────────────────────────────────────────────────────
+
+const GoogleLogo = ({ className = 'w-[18px] h-[18px]' }) => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 48 48"
+        className={className}
+        aria-hidden="true"
+        focusable="false"
+    >
+        <path
+            fill="#FFC107"
+            d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.1 8.1 3l5.7-5.7C34.3 6.8 29.4 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c10 0 19-7.2 19-20 0-1.2-.1-2.3-.4-3.5z"
+        />
+        <path
+            fill="#FF3D00"
+            d="m6.3 14.7 6.6 4.8C14.7 16 18.9 12 24 12c3.1 0 5.9 1.1 8.1 3l5.7-5.7C34.3 6.8 29.4 4 24 4 16.3 4 9.6 8.3 6.3 14.7z"
+        />
+        <path
+            fill="#4CAF50"
+            d="M24 44c5.2 0 10-2 13.5-5.2l-6.2-5.2C29.7 35.1 27 36 24 36c-5.3 0-9.7-3.3-11.3-8L6.2 32.9C9.5 39.4 16.2 44 24 44z"
+        />
+        <path
+            fill="#1976D2"
+            d="M43.6 20.5H42V20H24v8h11.3c-1.1 3.1-3.1 5.5-6 7.1l6.2 5.2C39.1 36.5 43 30.9 43 24c0-1.2-.1-2.3-.4-3.5z"
+        />
+    </svg>
+);
+
+
+// ─────────────────────────────────────────────────────────────────────────────
 // CONFIRM MODAL
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -285,21 +357,30 @@ const ConfirmModal = ({
                 `}
             >
 
-                {dangerous ? (
-                    <div className="w-40 h-40 md:w-48 md:h-48 mx-auto mb-6 overflow-hidden flex items-center justify-center">
-                        <img
-                            src={deleteImage}
-                            alt="Delete account"
-                            className="w-full h-full object-contain"
-                        />
-                    </div>
-                ) : (
-                    <div
-                        className="w-12 h-12 rounded-2xl flex items-center justify-center mb-5 bg-brand/10 text-brand"
-                    >
-                        <i className="bi bi-question-circle-fill text-xl" />
-                    </div>
-                )}
+                <div
+                    className={`
+                        w-12
+                        h-12
+                        rounded-2xl
+                        flex
+                        items-center
+                        justify-center
+                        mb-5
+                        ${
+                            dangerous
+                                ? 'bg-red-100 text-red-600'
+                                : 'bg-brand/10 text-brand'
+                        }
+                    `}
+                >
+                    <i
+                        className={`bi ${
+                            dangerous
+                                ? 'bi-exclamation'
+                                : 'bi-question-circle-fill'
+                        } text-xl`}
+                    />
+                </div>
 
                 <h3
                     className={`
@@ -308,7 +389,7 @@ const ConfirmModal = ({
                         mb-2
                         ${
                             dangerous
-                                ? 'text-red-500 text-center'
+                                ? 'text-red-500'
                                 : isDark
                                 ? 'text-white'
                                 : 'text-custom-dark'
@@ -328,7 +409,6 @@ const ConfirmModal = ({
                                 ? 'text-gray-400'
                                 : 'text-gray-500'
                         }
-                        ${dangerous ? 'text-center' : ''}
                     `}
                 >
                     {message}
@@ -406,11 +486,11 @@ const ForgotPasswordModal = ({
 
     const handleSend = async () => {
         const cleanEmail =
-            resetEmail.trim();
+            normalizeEmail(resetEmail);
 
-        if (!cleanEmail) {
+        if (!cleanEmail || !validateEmail(cleanEmail)) {
             setError(
-                'Please enter your email address.'
+                'Please enter a valid email address.'
             );
             return;
         }
@@ -517,6 +597,7 @@ const ForgotPasswordModal = ({
 
                         <input
                             type="email"
+                            maxLength={254}
                             value={resetEmail}
                             onChange={(e) =>
                                 setResetEmail(
@@ -658,12 +739,11 @@ const ReauthModal = ({
     const [error, setError] =
         useState('');
 
-    const providerId =
-        currentUser?.providerData?.[0]
-            ?.providerId;
+    const providerIds = getProviderIds(currentUser);
 
     const isGoogle =
-        providerId === 'google.com';
+        providerIds.includes('google.com');
+
 
     const handlePasswordReauth =
         async () => {
@@ -803,6 +883,7 @@ const ReauthModal = ({
                     <>
                         <input
                             type="password"
+                            maxLength={128}
                             value={password}
                             onChange={(e) =>
                                 setPassword(
@@ -1249,6 +1330,8 @@ const AccountPage = ({
                         setUploadedRoutes([]);
                         setSavedCount(0);
                         setFavCount(0);
+                        setIsEditing(false);
+                        setLoadingAction(null);
 
                         setAuthMode('login');
                     }
@@ -1484,7 +1567,7 @@ const AccountPage = ({
             sanitizeText(regLastName);
 
         const cleanEmail =
-            email.trim();
+            normalizeEmail(email);
 
 
         if (!validateName(cleanFirst)) {
@@ -1499,12 +1582,15 @@ const AccountPage = ({
 
         if (!validatePassword(password)) {
             errors.password =
-                'Use 8+ characters with uppercase, number and symbol.';
+                'Use 8+ characters with uppercase, number and symbol (max 128 characters).';
         }
 
         if (!cleanEmail) {
             errors.email =
                 'Email is required.';
+        } else if (!validateEmail(cleanEmail)) {
+            errors.email =
+                'Enter a valid email address.';
         }
 
 
@@ -1539,8 +1625,6 @@ const AccountPage = ({
                 }
             );
 
-            // Send email verification for email/password accounts
-            await sendEmailVerification(user);
 
             await setDoc(
                 doc(
@@ -1609,9 +1693,12 @@ const AccountPage = ({
             return;
         }
 
-        if (!email.trim()) {
+        const cleanEmail =
+            normalizeEmail(email);
+
+        if (!cleanEmail || !validateEmail(cleanEmail)) {
             showToast(
-                'Enter your email address.',
+                'Enter a valid email address.',
                 'error'
             );
             return;
@@ -1631,7 +1718,7 @@ const AccountPage = ({
 
             await signInWithEmailAndPassword(
                 auth,
-                email.trim(),
+                cleanEmail,
                 password
             );
 
@@ -1667,12 +1754,18 @@ const AccountPage = ({
     const handleGoogleSignIn =
         async () => {
 
+            if (loadingAction) return;
+
             setLoadingAction('google');
 
             try {
 
                 const provider =
                     new GoogleAuthProvider();
+
+                provider.setCustomParameters({
+                    prompt: 'select_account',
+                });
 
                 const result =
                     await signInWithPopup(
@@ -1780,7 +1873,7 @@ const AccountPage = ({
 
             try {
 
-                await updateDoc(
+                await setDoc(
                     doc(
                         db,
                         'users',
@@ -1792,6 +1885,9 @@ const AccountPage = ({
 
                         lastName:
                             cleanLast,
+                    },
+                    {
+                        merge: true,
                     }
                 );
 
@@ -1835,7 +1931,22 @@ const AccountPage = ({
     const handleDeleteUpload =
         async (routeId) => {
 
-            if (!currentUser) return;
+            if (!currentUser || !routeId) return;
+
+            const ownedRoute =
+                uploadedRoutes.find(
+                    (route) =>
+                        route.id === routeId &&
+                        route.uploadedBy === currentUser.uid
+                );
+
+            if (!ownedRoute) {
+                showToast(
+                    'This route does not belong to your account.',
+                    'error'
+                );
+                return;
+            }
 
             try {
 
@@ -2015,7 +2126,22 @@ const AccountPage = ({
     // ─────────────────────────────────────────
 
     return (
-        <div className="w-full min-h-full pb-24 relative overflow-x-hidden">
+        <div
+            className={`
+                w-full
+                min-h-full
+                pb-24
+                relative
+                overflow-x-hidden
+                transition-colors
+                duration-300
+                ${
+                    isDark
+                        ? 'bg-gray-950 text-gray-100'
+                        : 'bg-gray-50 text-gray-900'
+                }
+            `}
+        >
 
             {toast && (
                 <Toast
@@ -2282,7 +2408,10 @@ const AccountPage = ({
                                             value={firstName}
                                             onChange={(e) =>
                                                 setFirstName(
-                                                    e.target.value
+                                                    sanitizeText(
+                                                        e.target.value,
+                                                        50
+                                                    )
                                                 )
                                             }
                                             maxLength={50}
@@ -2317,7 +2446,10 @@ const AccountPage = ({
                                             value={lastName}
                                             onChange={(e) =>
                                                 setLastName(
-                                                    e.target.value
+                                                    sanitizeText(
+                                                        e.target.value,
+                                                        50
+                                                    )
                                                 )
                                             }
                                             maxLength={50}
@@ -3207,7 +3339,10 @@ const AccountPage = ({
                                                 maxLength={50}
                                                 onChange={(e) =>
                                                     setRegFirstName(
-                                                        e.target.value
+                                                        sanitizeText(
+                                                            e.target.value,
+                                                            50
+                                                        )
                                                     )
                                                 }
                                                 placeholder="John"
@@ -3252,7 +3387,10 @@ const AccountPage = ({
                                                 maxLength={50}
                                                 onChange={(e) =>
                                                     setRegLastName(
-                                                        e.target.value
+                                                        sanitizeText(
+                                                            e.target.value,
+                                                            50
+                                                        )
                                                     )
                                                 }
                                                 placeholder="Doe"
@@ -3347,6 +3485,7 @@ const AccountPage = ({
                                                     ? 'text'
                                                     : 'password'
                                             }
+                                            maxLength={128}
                                             value={password}
                                             onChange={(e) =>
                                                 setPassword(
@@ -3593,9 +3732,7 @@ const AccountPage = ({
 
                                     ) : (
 
-                                        <span className="text-base">
-                                            G
-                                        </span>
+                                        <GoogleLogo className="w-[18px] h-[18px]" />
 
                                     )}
 

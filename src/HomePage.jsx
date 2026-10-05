@@ -17,7 +17,6 @@ import { onAuthStateChanged } from "firebase/auth";
 
 import BusResultCard from "./BusResultCard.jsx";
 import BusStoppingCard from "./BusStoppingCard.jsx";
-import noBusImage from "./assets/i dont know.png";
 
 /* =========================================================
    TIMING OPTIONS
@@ -209,6 +208,77 @@ const DpiToggle = ({
     </label>
   );
 };
+
+
+const homeDarkCss = `
+  .dpi-home-dark {
+    background: #0B0D12 !important;
+    color: #F5F5F7 !important;
+  }
+
+  .dpi-home-dark .bg-white {
+    background-color: #111318 !important;
+  }
+
+  .dpi-home-dark .bg-\\[\\#F7F8FC\\] {
+    background-color: #0B0D12 !important;
+  }
+
+  .dpi-home-dark .bg-\\[\\#FAFAFD\\] {
+    background-color: #151820 !important;
+  }
+
+  .dpi-home-dark .bg-\\[\\#F4F2FF\\] {
+    background-color: #29254A !important;
+  }
+
+  .dpi-home-dark .border-\\[\\#E7E7EF\\] {
+    border-color: #2A2E39 !important;
+  }
+
+  .dpi-home-dark .border-\\[\\#DDD8FA\\] {
+    border-color: #4A456F !important;
+  }
+
+  .dpi-home-dark .text-\\[\\#111827\\] {
+    color: #F5F5F7 !important;
+  }
+
+  .dpi-home-dark .text-\\[\\#374151\\] {
+    color: #D1D5DB !important;
+  }
+
+  .dpi-home-dark .text-\\[\\#6B7280\\] {
+    color: #9CA3AF !important;
+  }
+
+  .dpi-home-dark .text-\\[\\#8B93A3\\] {
+    color: #9CA3AF !important;
+  }
+
+  .dpi-home-dark input {
+    background-color: #111318 !important;
+    color: #F5F5F7 !important;
+    border-color: #2A2E39 !important;
+  }
+
+  .dpi-home-dark input::placeholder {
+    color: #737B8C !important;
+    opacity: 1;
+  }
+
+  .dpi-home-dark [class*="shadow-"] {
+    --tw-shadow-color: rgba(0, 0, 0, 0.35) !important;
+  }
+
+  .dpi-home-dark .hover\\:bg-\\[\\#F7F8FC\\]:hover {
+    background-color: #1A1D25 !important;
+  }
+
+  .dpi-home-dark .hover\\:bg-\\[\\#F4F2FF\\]:hover {
+    background-color: #302B55 !important;
+  }
+`;
 
 /* =========================================================
    HOMEPAGE
@@ -468,7 +538,7 @@ const HomePage = ({ isDark = false }) => {
       busNumber.trim().toLowerCase();
 
     if (!value) {
-      return [];
+      return allBusNumbers.slice(0, 7);
     }
 
     return allBusNumbers
@@ -950,11 +1020,12 @@ const HomePage = ({ isDark = false }) => {
 
   if (isFetching) {
     return (
-      <div className={`${isDark ? "dark" : ""} flex min-h-screen items-center justify-center bg-[#F7F8FC] dark:bg-[#0F172A] px-6 font-[Montserrat,sans-serif] text-[#111827] dark:text-white`}>
+      <div className={`dpi-home-page ${isDark ? "dpi-home-dark" : ""} flex min-h-screen items-center justify-center bg-[#F7F8FC] px-6 font-[Montserrat,sans-serif] text-[#111827]`}>
+        {isDark && <style>{homeDarkCss}</style>}
         <div className="flex flex-col items-center gap-4 text-center">
           <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#ECE9FF] border-t-[#7667E8]" />
 
-          <p className="text-sm font-semibold text-[#374151] dark:text-[#E5E7EB]">
+          <p className="text-sm font-semibold text-[#374151]">
             Connecting to DPI One...
           </p>
         </div>
@@ -968,17 +1039,18 @@ const HomePage = ({ isDark = false }) => {
 
   if (fetchError) {
     return (
-      <div className={`${isDark ? "dark" : ""} flex min-h-screen items-center justify-center bg-[#F7F8FC] dark:bg-[#0F172A] px-6 font-[Montserrat,sans-serif]`}>
-        <div className="w-full max-w-sm rounded-3xl border border-[#E7E7EF] dark:border-[#30384A] bg-white dark:bg-[#1B2230] p-8 text-center shadow-[0_12px_40px_rgba(17,24,39,0.08)]">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 dark:bg-red-950/30 text-red-500 dark:text-red-400">
+      <div className={`dpi-home-page ${isDark ? "dpi-home-dark" : ""} flex min-h-screen items-center justify-center bg-[#F7F8FC] px-6 font-[Montserrat,sans-serif]`}>
+        {isDark && <style>{homeDarkCss}</style>}
+        <div className="w-full max-w-sm rounded-3xl border border-[#E7E7EF] bg-white p-8 text-center shadow-[0_12px_40px_rgba(17,24,39,0.08)]">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-500">
             <i className="bi bi-wifi-off text-2xl" />
           </div>
 
-          <h2 className="text-lg font-extrabold text-[#111827] dark:text-white">
+          <h2 className="text-lg font-extrabold text-[#111827]">
             Connection Failed
           </h2>
 
-          <p className="mt-2 text-sm leading-6 text-[#8B93A3] dark:text-[#9CA3AF]">
+          <p className="mt-2 text-sm leading-6 text-[#8B93A3]">
             We could not load the approved bus
             routes right now.
           </p>
@@ -1001,14 +1073,15 @@ const HomePage = ({ isDark = false }) => {
   ====================================================== */
 
   return (
-    <div className={`${isDark ? "dark" : ""} min-h-screen overflow-x-hidden bg-[#F7F8FC] dark:bg-[#0F172A] font-[Montserrat,sans-serif] text-[#111827] dark:text-white`}>
+    <div className={`dpi-home-page ${isDark ? "dpi-home-dark" : ""} min-h-screen overflow-x-hidden bg-[#F7F8FC] font-[Montserrat,sans-serif] text-[#111827]`}>
+      {isDark && <style>{homeDarkCss}</style>}
       <main>
 
         {/* =====================================================
             HERO
         ====================================================== */}
 
-        <section className="relative overflow-hidden bg-white dark:bg-[#1B2230]">
+        <section className="relative overflow-hidden bg-white">
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
             <div className="absolute -right-28 -top-32 h-80 w-80 rounded-full bg-[#7667E8]/[0.08] blur-3xl" />
 
@@ -1018,20 +1091,20 @@ const HomePage = ({ isDark = false }) => {
           <div className="relative mx-auto max-w-5xl px-5 pb-20 pt-12 sm:px-8 sm:pb-24 sm:pt-16 lg:px-10 lg:pt-20">
             <div className="max-w-3xl">
 
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#DDD8FA] dark:border-[#4A4382] bg-[#F4F2FF] dark:bg-[#211C3A] px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.08em] text-[#6657D8] dark:text-[#9A8FFF]">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#DDD8FA] bg-[#F4F2FF] px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.08em] text-[#6657D8]">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#7667E8]" />
 
                 Dharmapuri Bus Information
               </div>
 
-              <h1 className="mt-5 max-w-3xl text-4xl font-extrabold leading-[1.06] tracking-[-0.045em] text-[#111827] dark:text-white sm:text-5xl lg:text-[60px]">
+              <h1 className="mt-5 max-w-3xl text-4xl font-extrabold leading-[1.06] tracking-[-0.045em] text-[#111827] sm:text-5xl lg:text-[60px]">
                 Find the right bus.
                 <span className="block text-[#7667E8]">
                   Reach your destination.
                 </span>
               </h1>
 
-              <p className="mt-4 max-w-xl text-sm leading-6 text-[#6B7280] dark:text-[#A7A9B5] sm:text-base sm:leading-7">
+              <p className="mt-4 max-w-xl text-sm leading-6 text-[#6B7280] sm:text-base sm:leading-7">
                 Search Dharmapuri bus services by
                 bus number, route and timing.
               </p>
@@ -1047,28 +1120,31 @@ const HomePage = ({ isDark = false }) => {
         <section className="relative z-20 px-4 sm:px-6 lg:px-8">
           <div
             ref={formRef}
-            className="mx-auto -mt-10 w-full max-w-4xl rounded-[24px] border border-[#E7E7EF] dark:border-[#30384A] bg-white dark:bg-[#1B2230] p-5 shadow-[0_18px_50px_rgba(31,25,80,0.075)] sm:-mt-12 sm:p-6 lg:p-7"
+            className="mx-auto -mt-10 w-full max-w-4xl rounded-[24px] border border-[#E7E7EF] bg-white p-5 shadow-[0_18px_50px_rgba(31,25,80,0.075)] sm:-mt-12 sm:p-6 lg:p-7"
           >
 
             {/* HEADER */}
 
             <div className="mb-5 flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#F4F2FF] dark:bg-[#211C3A] text-[#7667E8]">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#F4F2FF] text-[#7667E8]">
                   <i className="bi bi-search" />
                 </span>
 
                 <div>
-                  <h2 className="text-base font-extrabold tracking-tight text-[#111827] dark:text-white sm:text-lg">
+                  <h2 className="text-base font-extrabold tracking-tight text-[#111827] sm:text-lg">
                     Search your bus
                   </h2>
 
-                  <p className="mt-0.5 text-[10px] font-medium text-[#9CA3AF] dark:text-[#A7A9B5] sm:text-xs">
+                  <p className="mt-0.5 text-[10px] font-medium text-[#9CA3AF] sm:text-xs">
                     Enter your bus number and route.
                   </p>
                 </div>
               </div>
 
+              <div className="hidden rounded-full bg-[#F7F8FC] px-2.5 py-1.5 text-[10px] font-extrabold text-[#8B93A3] sm:block">
+                {buses.length} approved services
+              </div>
             </div>
 
             {/* ERROR */}
@@ -1076,7 +1152,7 @@ const HomePage = ({ isDark = false }) => {
             {validationError && (
               <div
                 role="alert"
-                className="mb-4 flex items-start gap-2.5 rounded-xl border border-red-100 dark:border-red-900/40 bg-[#FFF9F9] dark:bg-[#2A1618] px-3.5 py-2.5 text-xs font-bold text-red-500 dark:text-red-400"
+                className="mb-4 flex items-start gap-2.5 rounded-xl border border-red-100 bg-[#FFF9F9] px-3.5 py-2.5 text-xs font-bold text-red-500"
               >
                 <i className="bi bi-exclamation-circle-fill mt-0.5" />
 
@@ -1097,7 +1173,7 @@ const HomePage = ({ isDark = false }) => {
               ================================================= */}
 
               <div className="relative z-[100]">
-                <label className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-[0.08em] text-[#6B7280] dark:text-[#A7A9B5]">
+                <label className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-[0.08em] text-[#6B7280]">
                   Bus Number
                   <span className="ml-1 text-[#7667E8]">
                     *
@@ -1105,7 +1181,7 @@ const HomePage = ({ isDark = false }) => {
                 </label>
 
                 <div className="relative">
-                  <span className="pointer-events-none absolute left-3.5 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg bg-[#F4F2FF] dark:bg-[#211C3A] text-[#7667E8]">
+                  <span className="pointer-events-none absolute left-3.5 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg bg-[#F4F2FF] text-[#7667E8]">
                     <i className="bi bi-bus-front-fill text-sm" />
                   </span>
 
@@ -1117,28 +1193,24 @@ const HomePage = ({ isDark = false }) => {
                     inputMode="text"
                     aria-autocomplete="list"
                     placeholder="Enter bus number"
-                    onFocus={() => {
-                      if (busNumber.trim()) {
-                        setActiveInput("bus");
-                      } else {
-                        setActiveInput(null);
-                      }
-                    }}
+                    onFocus={() =>
+                      setActiveInput("bus")
+                    }
                     onChange={(event) => {
-                      const nextValue = sanitizeBusNo(
-                        event.target.value
+                      setBusNumber(
+                        sanitizeBusNo(
+                          event.target.value
+                        )
                       );
 
-                      setBusNumber(nextValue);
-                      setActiveInput(nextValue ? "bus" : null);
                       setValidationError("");
                     }}
-                    className="h-12 w-full rounded-xl border border-[#E7E7EF] dark:border-[#30384A] bg-white dark:bg-[#1B2230] pl-14 pr-4 text-sm font-extrabold uppercase tracking-wide text-[#111827] dark:text-white outline-none transition placeholder:font-semibold placeholder:normal-case placeholder:tracking-normal placeholder:text-[#A3A8B5] dark:placeholder:text-[#727A8D] hover:border-[#DDD8FA] focus:border-[#7667E8] focus:bg-[#FCFBFF] dark:focus:bg-[#211F31] focus:ring-4 focus:ring-[#7667E8]/[0.08]"
+                    className="h-12 w-full rounded-xl border border-[#E7E7EF] bg-white pl-14 pr-4 text-sm font-extrabold uppercase tracking-wide text-[#111827] outline-none transition placeholder:font-semibold placeholder:normal-case placeholder:tracking-normal placeholder:text-[#A3A8B5] hover:border-[#DDD8FA] focus:border-[#7667E8] focus:bg-[#FCFBFF] focus:ring-4 focus:ring-[#7667E8]/[0.08]"
                   />
 
                   {activeInput === "bus" &&
                     busSuggestions.length > 0 && (
-                      <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-[999] max-h-[230px] overflow-y-auto rounded-[14px] border border-[#E7E7EF] dark:border-[#30384A] bg-white dark:bg-[#1B2230] p-1.5 shadow-[0_18px_45px_rgba(15,23,42,0.12)]">
+                      <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-[999] max-h-[230px] overflow-y-auto rounded-[14px] border border-[#E7E7EF] bg-white p-1.5 shadow-[0_18px_45px_rgba(15,23,42,0.12)]">
                         {busSuggestions.map(
                           (bus) => (
                             <button
@@ -1150,13 +1222,13 @@ const HomePage = ({ isDark = false }) => {
                                   null
                                 );
                               }}
-                              className="flex min-h-[44px] w-full items-center gap-2.5 rounded-[10px] px-3 py-2 text-left transition hover:bg-[#F4F2FF] dark:hover:bg-[#292341]"
+                              className="flex min-h-[44px] w-full items-center gap-2.5 rounded-[10px] px-3 py-2 text-left transition hover:bg-[#F4F2FF]"
                             >
-                              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#F4F2FF] dark:bg-[#211C3A] text-[#7667E8]">
+                              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#F4F2FF] text-[#7667E8]">
                                 <i className="bi bi-bus-front-fill text-xs" />
                               </span>
 
-                              <span className="text-sm font-extrabold tracking-wide text-[#374151] dark:text-[#E5E7EB]">
+                              <span className="text-sm font-extrabold tracking-wide text-[#374151]">
                                 {bus}
                               </span>
                             </button>
@@ -1176,12 +1248,12 @@ const HomePage = ({ isDark = false }) => {
                 {/* FROM */}
 
                 <div className="relative z-[80]">
-                  <label className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-[0.08em] text-[#6B7280] dark:text-[#A7A9B5]">
+                  <label className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-[0.08em] text-[#6B7280]">
                     From
                   </label>
 
                   <div className="relative">
-                    <span className="pointer-events-none absolute left-3.5 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg bg-[#F4F2FF] dark:bg-[#211C3A] text-[#7667E8]">
+                    <span className="pointer-events-none absolute left-3.5 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg bg-[#F4F2FF] text-[#7667E8]">
                       <i className="bi bi-geo-alt-fill text-sm" />
                     </span>
 
@@ -1206,14 +1278,14 @@ const HomePage = ({ isDark = false }) => {
 
                         setValidationError("");
                       }}
-                      className="h-12 w-full rounded-xl border border-[#E7E7EF] dark:border-[#30384A] bg-white dark:bg-[#1B2230] pl-14 pr-4 text-sm font-semibold text-[#111827] dark:text-white outline-none transition placeholder:text-[#A3A8B5] dark:placeholder:text-[#727A8D] hover:border-[#DDD8FA] focus:border-[#7667E8] focus:bg-[#FCFBFF] dark:focus:bg-[#211F31] focus:ring-4 focus:ring-[#7667E8]/[0.08]"
+                      className="h-12 w-full rounded-xl border border-[#E7E7EF] bg-white pl-14 pr-4 text-sm font-semibold text-[#111827] outline-none transition placeholder:text-[#A3A8B5] hover:border-[#DDD8FA] focus:border-[#7667E8] focus:bg-[#FCFBFF] focus:ring-4 focus:ring-[#7667E8]/[0.08]"
                     />
 
                     {activeInput ===
                       "departure" &&
                       startSuggestions.length >
                         0 && (
-                        <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-[999] max-h-[230px] overflow-y-auto rounded-[14px] border border-[#E7E7EF] dark:border-[#30384A] bg-white dark:bg-[#1B2230] p-1.5 shadow-[0_18px_45px_rgba(15,23,42,0.12)]">
+                        <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-[999] max-h-[230px] overflow-y-auto rounded-[14px] border border-[#E7E7EF] bg-white p-1.5 shadow-[0_18px_45px_rgba(15,23,42,0.12)]">
                           {startSuggestions.map(
                             (city) => (
                               <button
@@ -1228,9 +1300,9 @@ const HomePage = ({ isDark = false }) => {
                                     null
                                   );
                                 }}
-                                className="flex min-h-[44px] w-full items-center gap-2.5 rounded-[10px] px-3 py-2 text-left text-xs font-semibold text-[#374151] dark:text-[#E5E7EB] transition hover:bg-[#F4F2FF] dark:hover:bg-[#292341] hover:text-[#7667E8] dark:hover:text-[#9A8FFF]"
+                                className="flex min-h-[44px] w-full items-center gap-2.5 rounded-[10px] px-3 py-2 text-left text-xs font-semibold text-[#374151] transition hover:bg-[#F4F2FF] hover:text-[#7667E8]"
                               >
-                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#F4F2FF] dark:bg-[#211C3A] text-[#7667E8]">
+                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#F4F2FF] text-[#7667E8]">
                                   <i className="bi bi-geo-alt-fill text-xs" />
                                 </span>
 
@@ -1268,7 +1340,7 @@ const HomePage = ({ isDark = false }) => {
                       ${
                         isSwapped
                           ? "!border-[#6657D8] !bg-[#7667E8] !text-white rotate-180"
-                          : "border-[#DDD8FA] dark:border-[#4A4382] bg-white dark:bg-[#1B2230] text-[#7667E8] hover:bg-[#F4F2FF] dark:hover:bg-[#292341]"
+                          : "border-[#DDD8FA] bg-white text-[#7667E8] hover:bg-[#F4F2FF]"
                       }
                     `}
                   >
@@ -1279,12 +1351,12 @@ const HomePage = ({ isDark = false }) => {
                 {/* TO */}
 
                 <div className="relative z-[70]">
-                  <label className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-[0.08em] text-[#6B7280] dark:text-[#A7A9B5]">
+                  <label className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-[0.08em] text-[#6B7280]">
                     To
                   </label>
 
                   <div className="relative">
-                    <span className="pointer-events-none absolute left-3.5 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg bg-[#F4F2FF] dark:bg-[#211C3A] text-[#7667E8]">
+                    <span className="pointer-events-none absolute left-3.5 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg bg-[#F4F2FF] text-[#7667E8]">
                       <i className="bi bi-geo-fill text-sm" />
                     </span>
 
@@ -1309,14 +1381,14 @@ const HomePage = ({ isDark = false }) => {
 
                         setValidationError("");
                       }}
-                      className="h-12 w-full rounded-xl border border-[#E7E7EF] dark:border-[#30384A] bg-white dark:bg-[#1B2230] pl-14 pr-4 text-sm font-semibold text-[#111827] dark:text-white outline-none transition placeholder:text-[#A3A8B5] dark:placeholder:text-[#727A8D] hover:border-[#DDD8FA] focus:border-[#7667E8] focus:bg-[#FCFBFF] dark:focus:bg-[#211F31] focus:ring-4 focus:ring-[#7667E8]/[0.08]"
+                      className="h-12 w-full rounded-xl border border-[#E7E7EF] bg-white pl-14 pr-4 text-sm font-semibold text-[#111827] outline-none transition placeholder:text-[#A3A8B5] hover:border-[#DDD8FA] focus:border-[#7667E8] focus:bg-[#FCFBFF] focus:ring-4 focus:ring-[#7667E8]/[0.08]"
                     />
 
                     {activeInput ===
                       "arrival" &&
                       destinationSuggestions.length >
                         0 && (
-                        <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-[999] max-h-[230px] overflow-y-auto rounded-[14px] border border-[#E7E7EF] dark:border-[#30384A] bg-white dark:bg-[#1B2230] p-1.5 shadow-[0_18px_45px_rgba(15,23,42,0.12)]">
+                        <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-[999] max-h-[230px] overflow-y-auto rounded-[14px] border border-[#E7E7EF] bg-white p-1.5 shadow-[0_18px_45px_rgba(15,23,42,0.12)]">
                           {destinationSuggestions.map(
                             (city) => (
                               <button
@@ -1331,9 +1403,9 @@ const HomePage = ({ isDark = false }) => {
                                     null
                                   );
                                 }}
-                                className="flex min-h-[44px] w-full items-center gap-2.5 rounded-[10px] px-3 py-2 text-left text-xs font-semibold text-[#374151] dark:text-[#E5E7EB] transition hover:bg-[#F4F2FF] dark:hover:bg-[#292341] hover:text-[#7667E8] dark:hover:text-[#9A8FFF]"
+                                className="flex min-h-[44px] w-full items-center gap-2.5 rounded-[10px] px-3 py-2 text-left text-xs font-semibold text-[#374151] transition hover:bg-[#F4F2FF] hover:text-[#7667E8]"
                               >
-                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#F4F2FF] dark:bg-[#211C3A] text-[#7667E8]">
+                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#F4F2FF] text-[#7667E8]">
                                   <i className="bi bi-geo-fill text-xs" />
                                 </span>
 
@@ -1354,9 +1426,9 @@ const HomePage = ({ isDark = false }) => {
               ================================================= */}
 
               <div className="relative z-[50]">
-                <label className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-[0.08em] text-[#6B7280] dark:text-[#A7A9B5]">
+                <label className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-[0.08em] text-[#6B7280]">
                   Timing
-                  <span className="ml-1.5 text-[9px] font-semibold normal-case tracking-normal text-[#A3A8B5] dark:text-[#7F8798]">
+                  <span className="ml-1.5 text-[9px] font-semibold normal-case tracking-normal text-[#A3A8B5]">
                     optional
                   </span>
                 </label>
@@ -1376,10 +1448,10 @@ const HomePage = ({ isDark = false }) => {
                         : "timeFilter"
                     )
                   }
-                  className="flex h-12 w-full items-center justify-between rounded-xl border border-[#E7E7EF] dark:border-[#30384A] bg-white dark:bg-[#1B2230] px-3.5 text-left text-sm font-semibold text-[#374151] dark:text-[#E5E7EB] outline-none transition hover:border-[#DDD8FA] focus:border-[#7667E8] focus:ring-4 focus:ring-[#7667E8]/[0.08]"
+                  className="flex h-12 w-full items-center justify-between rounded-xl border border-[#E7E7EF] bg-white px-3.5 text-left text-sm font-semibold text-[#374151] outline-none transition hover:border-[#DDD8FA] focus:border-[#7667E8] focus:ring-4 focus:ring-[#7667E8]/[0.08]"
                 >
                   <span className="flex min-w-0 items-center gap-2.5">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#F4F2FF] dark:bg-[#211C3A] text-[#7667E8]">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#F4F2FF] text-[#7667E8]">
                       <i
                         className={`bi ${selectedTiming.icon} text-xs`}
                       />
@@ -1391,7 +1463,7 @@ const HomePage = ({ isDark = false }) => {
                   </span>
 
                   <i
-                    className={`bi bi-chevron-down ml-2 shrink-0 text-[#8B93A3] dark:text-[#9CA3AF] transition-transform duration-200 ${
+                    className={`bi bi-chevron-down ml-2 shrink-0 text-[#8B93A3] transition-transform duration-200 ${
                       activeInput ===
                       "timeFilter"
                         ? "rotate-180"
@@ -1402,7 +1474,7 @@ const HomePage = ({ isDark = false }) => {
 
                 {activeInput ===
                   "timeFilter" && (
-                  <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-[999] rounded-[14px] border border-[#E7E7EF] dark:border-[#30384A] bg-white dark:bg-[#1B2230] p-1.5 shadow-[0_18px_45px_rgba(15,23,42,0.12)]">
+                  <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-[999] rounded-[14px] border border-[#E7E7EF] bg-white p-1.5 shadow-[0_18px_45px_rgba(15,23,42,0.12)]">
                     {timingOptions.map(
                       (option) => (
                         <button
@@ -1429,7 +1501,7 @@ const HomePage = ({ isDark = false }) => {
                             selectedTimeFilter ===
                             option.id
                               ? "bg-[#7667E8] text-white"
-                              : "text-[#374151] dark:text-[#E5E7EB] hover:bg-[#F4F2FF] dark:hover:bg-[#292341] hover:text-[#7667E8] dark:hover:text-[#9A8FFF]"
+                              : "text-[#374151] hover:bg-[#F4F2FF] hover:text-[#7667E8]"
                           }`}
                         >
                           <i
@@ -1483,7 +1555,7 @@ const HomePage = ({ isDark = false }) => {
               ================================================= */}
 
               <div className="flex items-center justify-between gap-3 pt-0.5">
-                <p className="text-[10px] font-medium text-[#A3A8B5] dark:text-[#7F8798]">
+                <p className="text-[10px] font-medium text-[#A3A8B5]">
                   Bus number is required to find
                   the exact service.
                 </p>
@@ -1515,16 +1587,16 @@ const HomePage = ({ isDark = false }) => {
                     active:scale-[0.98]
                     ${
                       isCurrentRouteSaved
-                        ? "border-[#DDD8FA] dark:border-[#4A4382] bg-[#F4F2FF] dark:bg-[#211C3A] text-[#6657D8] dark:text-[#9A8FFF]"
-                        : "border-[#E7E7EF] dark:border-[#30384A] bg-white dark:bg-[#1B2230] text-[#374151] dark:text-[#E5E7EB] hover:border-[#DDD8FA] hover:bg-[#F7F8FC] dark:hover:bg-[#202638]"
+                        ? "border-[#DDD8FA] bg-[#F4F2FF] text-[#6657D8]"
+                        : "border-[#E7E7EF] bg-white text-[#374151] hover:border-[#DDD8FA] hover:bg-[#F7F8FC]"
                     }
                   `}
                 >
                   <i
                     className={`bi ${
                       isCurrentRouteSaved
-                        ? "bi-bookmark"
-                        : "bi-bookmark"
+                        ? "bi-save-fill"
+                        : "bi-save"
                     }`}
                   />
 
@@ -1548,46 +1620,46 @@ const HomePage = ({ isDark = false }) => {
           <section className="mx-auto max-w-4xl px-5 pb-16 pt-8 sm:px-8 sm:pt-10 lg:px-10">
             <div className="grid gap-3 sm:grid-cols-3">
 
-              <div className="rounded-2xl border border-[#E7E7EF] dark:border-[#30384A] bg-white dark:bg-[#1B2230] p-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#F4F2FF] dark:bg-[#211C3A] text-[#7667E8]">
+              <div className="rounded-2xl border border-[#E7E7EF] bg-white p-4">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#F4F2FF] text-[#7667E8]">
                   <i className="bi bi-bus-front-fill text-sm" />
                 </div>
 
-                <h3 className="mt-3 text-xs font-extrabold text-[#111827] dark:text-white">
+                <h3 className="mt-3 text-xs font-extrabold text-[#111827]">
                   Search by bus number
                 </h3>
 
-                <p className="mt-1.5 text-[10px] leading-4 text-[#8B93A3] dark:text-[#9CA3AF]">
+                <p className="mt-1.5 text-[10px] leading-4 text-[#8B93A3]">
                   Select the bus service number from
                   the suggestions.
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-[#E7E7EF] dark:border-[#30384A] bg-white dark:bg-[#1B2230] p-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#F4F2FF] dark:bg-[#211C3A] text-[#7667E8]">
+              <div className="rounded-2xl border border-[#E7E7EF] bg-white p-4">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#F4F2FF] text-[#7667E8]">
                   <i className="bi bi-signpost-2-fill text-sm" />
                 </div>
 
-                <h3 className="mt-3 text-xs font-extrabold text-[#111827] dark:text-white">
+                <h3 className="mt-3 text-xs font-extrabold text-[#111827]">
                   Choose your route
                 </h3>
 
-                <p className="mt-1.5 text-[10px] leading-4 text-[#8B93A3] dark:text-[#9CA3AF]">
+                <p className="mt-1.5 text-[10px] leading-4 text-[#8B93A3]">
                   Select your departure and destination
                   from the live list.
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-[#E7E7EF] dark:border-[#30384A] bg-white dark:bg-[#1B2230] p-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#F4F2FF] dark:bg-[#211C3A] text-[#7667E8]">
+              <div className="rounded-2xl border border-[#E7E7EF] bg-white p-4">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#F4F2FF] text-[#7667E8]">
                   <i className="bi bi-clock-history text-sm" />
                 </div>
 
-                <h3 className="mt-3 text-xs font-extrabold text-[#111827] dark:text-white">
+                <h3 className="mt-3 text-xs font-extrabold text-[#111827]">
                   Filter by timing
                 </h3>
 
-                <p className="mt-1.5 text-[10px] leading-4 text-[#8B93A3] dark:text-[#9CA3AF]">
+                <p className="mt-1.5 text-[10px] leading-4 text-[#8B93A3]">
                   Narrow the service by morning, afternoon,
                   evening or night.
                 </p>
@@ -1609,17 +1681,17 @@ const HomePage = ({ isDark = false }) => {
                   <div className="flex items-center gap-2">
                     <i className="bi bi-save-fill text-[#7667E8]" />
 
-                    <h2 className="text-sm font-extrabold text-[#111827] dark:text-white">
+                    <h2 className="text-sm font-extrabold text-[#111827]">
                       Saved Routes
                     </h2>
                   </div>
 
-                  <p className="mt-1 text-[10px] font-medium text-[#8B93A3] dark:text-[#9CA3AF]">
+                  <p className="mt-1 text-[10px] font-medium text-[#8B93A3]">
                     Tap a saved route to fill the search.
                   </p>
                 </div>
 
-                <span className="flex h-7 min-w-7 items-center justify-center rounded-full bg-[#F4F2FF] dark:bg-[#211C3A] px-2 text-[10px] font-extrabold text-[#6657D8] dark:text-[#9A8FFF]">
+                <span className="flex h-7 min-w-7 items-center justify-center rounded-full bg-[#F4F2FF] px-2 text-[10px] font-extrabold text-[#6657D8]">
                   {savedRoutes.length}
                 </span>
               </div>
@@ -1629,7 +1701,7 @@ const HomePage = ({ isDark = false }) => {
                   (route) => (
                     <div
                       key={route.id}
-                      className="flex min-w-[250px] items-center gap-3 rounded-2xl border border-[#E7E7EF] dark:border-[#30384A] bg-white dark:bg-[#1B2230] p-3 shadow-[0_5px_18px_rgba(17,24,39,0.035)]"
+                      className="flex min-w-[250px] items-center gap-3 rounded-2xl border border-[#E7E7EF] bg-white p-3 shadow-[0_5px_18px_rgba(17,24,39,0.035)]"
                     >
                       <button
                         type="button"
@@ -1640,17 +1712,17 @@ const HomePage = ({ isDark = false }) => {
                         }
                         className="flex min-w-0 flex-1 items-center gap-3 text-left"
                       >
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#F4F2FF] dark:bg-[#211C3A] text-[#7667E8]">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#F4F2FF] text-[#7667E8]">
                           <i className="bi bi-bus-front-fill text-sm" />
                         </span>
 
                         <span className="min-w-0">
-                          <span className="block truncate text-[11px] font-extrabold text-[#111827] dark:text-white">
+                          <span className="block truncate text-[11px] font-extrabold text-[#111827]">
                             {route.start} →{" "}
                             {route.dest}
                           </span>
 
-                          <span className="mt-1 block truncate text-[10px] font-semibold text-[#8B93A3] dark:text-[#9CA3AF]">
+                          <span className="mt-1 block truncate text-[10px] font-semibold text-[#8B93A3]">
                             Bus{" "}
                             {route.bus ||
                               "—"}
@@ -1669,7 +1741,7 @@ const HomePage = ({ isDark = false }) => {
                             route.id
                           )
                         }
-                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[#8B93A3] dark:text-[#9CA3AF] transition hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-500"
+                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[#8B93A3] transition hover:bg-red-50 hover:text-red-500"
                       >
                         <i className="bi bi-x text-base" />
                       </button>
@@ -1695,16 +1767,16 @@ const HomePage = ({ isDark = false }) => {
             <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#F4F2FF] dark:bg-[#211C3A] text-[#7667E8]">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#F4F2FF] text-[#7667E8]">
                     <i className="bi bi-signpost-split text-sm" />
                   </span>
 
-                  <h2 className="text-lg font-extrabold tracking-tight text-[#111827] dark:text-white">
+                  <h2 className="text-lg font-extrabold tracking-tight text-[#111827]">
                     Bus Results
                   </h2>
                 </div>
 
-                <p className="mt-1 pl-10 text-[11px] font-semibold text-[#8B93A3] dark:text-[#9CA3AF]">
+                <p className="mt-1 pl-10 text-[11px] font-semibold text-[#8B93A3]">
                   {matchedRoutes.length}{" "}
                   {matchedRoutes.length === 1
                     ? "bus"
@@ -1716,7 +1788,7 @@ const HomePage = ({ isDark = false }) => {
               <button
                 type="button"
                 onClick={clearSearch}
-                className="self-start rounded-lg px-2 py-1 text-[11px] font-extrabold text-[#6657D8] dark:text-[#9A8FFF] transition hover:bg-[#F4F2FF] dark:hover:bg-[#292341]"
+                className="self-start rounded-lg px-2 py-1 text-[11px] font-extrabold text-[#6657D8] transition hover:bg-[#F4F2FF]"
               >
                 Clear search
               </button>
@@ -1737,7 +1809,7 @@ const HomePage = ({ isDark = false }) => {
                     return (
                       <div
                         key={route.id}
-                        className="overflow-hidden rounded-2xl border border-[#E7E7EF] dark:border-[#30384A] bg-white dark:bg-[#1B2230] shadow-[0_8px_28px_rgba(17,24,39,0.045)]"
+                        className="overflow-hidden rounded-2xl border border-[#E7E7EF] bg-white shadow-[0_8px_28px_rgba(17,24,39,0.045)]"
                       >
 
                         <button
@@ -1794,12 +1866,14 @@ const HomePage = ({ isDark = false }) => {
                         </button>
 
                         {expanded && (
-                          <div className="border-t border-[#E7E7EF] dark:border-[#30384A] bg-[#FAFAFD] dark:bg-[#151A27] p-3 sm:p-4">
+                          <div className="border-t border-[#E7E7EF] bg-[#FAFAFD] p-3 sm:p-4">
                             <BusStoppingCard
                               stops={
                                 route.stops
                               }
-                              isDark={isDark}
+                              isDark={
+                                isDark
+                              }
                             />
                           </div>
                         )}
@@ -1825,21 +1899,17 @@ const HomePage = ({ isDark = false }) => {
 
               </div>
             ) : (
-              <div className="rounded-[22px] border border-[#E7E7EF] dark:border-[#30384A] bg-white dark:bg-[#1B2230] px-6 py-12 text-center shadow-[0_8px_28px_rgba(17,24,39,0.04)]">
+              <div className="rounded-[22px] border border-[#E7E7EF] bg-white px-6 py-12 text-center shadow-[0_8px_28px_rgba(17,24,39,0.04)]">
 
-                <img
-                  src={noBusImage}
-                  alt="No bus found"
-                  className="mx-auto h-auto w-full max-w-[260px] object-contain"
-                  loading="lazy"
-                  draggable="false"
-                />
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#F4F2FF] text-2xl text-[#7667E8]">
+                  <i className="bi bi-bus-front" />
+                </div>
 
-                <h3 className="mt-4 text-base font-extrabold text-[#111827] dark:text-white">
+                <h3 className="mt-4 text-base font-extrabold text-[#111827]">
                   No Bus Found
                 </h3>
 
-                <p className="mx-auto mt-2 max-w-md text-xs leading-5 text-[#8B93A3] dark:text-[#9CA3AF]">
+                <p className="mx-auto mt-2 max-w-md text-xs leading-5 text-[#8B93A3]">
                   No approved bus service matches
                   this bus number and route.
                   Check your details and try again.
