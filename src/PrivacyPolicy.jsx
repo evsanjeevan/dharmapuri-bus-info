@@ -1,37 +1,54 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-
-import font206 from "./assets/10_உழவன் தமிழ்.ttf";
-import bodyFont from "./assets/10_உழவன் தமிழ்.ttf";
+import tamilFont from "./assets/10_உழவன் தமிழ்.ttf";
 
 const FONT_STYLES = `
 @font-face {
-    font-family: "Dpi206";
-    src: url("${font206}") format("truetype");
+    font-family: "DpiTamil";
+    src: url("${tamilFont}") format("truetype");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
 }
 
-@font-face {
-    font-family: "DpiTamilBody";
-    src: url("${bodyFont}") format("truetype");
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-}
-
-.privacy-title-font {
-    font-family: "Dpi206", "Nirmala UI", sans-serif;
-}
-
-.privacy-body-font {
-    font-family: "DpiTamilBody", "Nirmala UI", "Segoe UI", Arial, sans-serif;
+.privacy-font {
+    font-family: "DpiTamil", "Nirmala UI", "Segoe UI", Arial, sans-serif;
 }
 `;
 
 const PrivacyPolicy = ({ isDark = false }) => {
     const navigate = useNavigate();
+
+    const headingClass = `
+        privacy-font
+        text-xl
+        md:text-2xl
+        font-black
+        mb-3
+        ${isDark ? "text-white" : "text-custom-dark"}
+    `;
+
+    const bodyClass = `
+        privacy-font
+        text-sm
+        md:text-base
+        leading-8
+        ${isDark ? "text-gray-300" : "text-gray-600"}
+    `;
+
+    const listClass = `
+        privacy-font
+        mt-3
+        pl-6
+        list-disc
+        space-y-2
+        text-sm
+        md:text-base
+        leading-8
+        ${isDark ? "text-gray-300" : "text-gray-600"}
+    `;
+
+    const dividerClass = `h-px ${isDark ? "bg-gray-800" : "bg-gray-100"}`;
 
     return (
         <main
@@ -49,8 +66,6 @@ const PrivacyPolicy = ({ isDark = false }) => {
             <style>{FONT_STYLES}</style>
 
             <div className="max-w-4xl mx-auto">
-
-                {/* BACK BUTTON */}
                 <button
                     type="button"
                     onClick={() => navigate(-1)}
@@ -77,26 +92,19 @@ const PrivacyPolicy = ({ isDark = false }) => {
                     Back
                 </button>
 
-
-                {/* PAGE HEADER */}
                 <header className="mb-6 md:mb-8">
-
                     <p className="text-[10px] uppercase tracking-[0.18em] font-black text-brand mb-2">
                         Privacy Policy
                     </p>
 
                     <h1
                         className={`
-                            privacy-title-font
+                            privacy-font
                             text-3xl
                             md:text-4xl
                             font-black
                             tracking-tight
-                            ${
-                                isDark
-                                    ? "text-white"
-                                    : "text-custom-dark"
-                            }
+                            ${isDark ? "text-white" : "text-custom-dark"}
                         `}
                     >
                         DPI One & Privacy Policy
@@ -104,24 +112,17 @@ const PrivacyPolicy = ({ isDark = false }) => {
 
                     <p
                         className={`
-                            privacy-body-font
+                            privacy-font
                             mt-2
                             text-sm
                             md:text-base
-                            ${
-                                isDark
-                                    ? "text-gray-400"
-                                    : "text-gray-500"
-                            }
+                            ${isDark ? "text-gray-400" : "text-gray-500"}
                         `}
                     >
                         கடைசியாக புதுப்பிக்கப்பட்டது: அக்டோபர் 2026
                     </p>
-
                 </header>
 
-
-                {/* MAIN CARD */}
                 <section
                     className={`
                         rounded-[2rem]
@@ -136,8 +137,6 @@ const PrivacyPolicy = ({ isDark = false }) => {
                         }
                     `}
                 >
-
-                    {/* INTRO ICON */}
                     <div
                         className={`
                             w-14
@@ -157,579 +156,265 @@ const PrivacyPolicy = ({ isDark = false }) => {
                         <i className="bi bi-shield text-2xl" />
                     </div>
 
-
                     <div className="space-y-8">
-
-                        {/* SECTION 1 */}
                         <section>
+                            <h2 className={headingClass}>1. அறிமுகம்</h2>
+                            <p className={bodyClass}>
+                                DPI One என்பது பேருந்து வழித்தடங்கள், நேரங்கள்,
+                                நிறுத்தங்கள் மற்றும் தொடர்புடைய பயணத் தகவல்களை
+                                பயனர்களுக்கு வழங்கும் சேவையாகும். இந்த Privacy
+                                Policy, DPI One பயன்படுத்தும் போது கணக்கு மற்றும்
+                                சேவை தொடர்பாக கையாளப்படும் தகவல்களை விளக்குகிறது.
+                            </p>
+                        </section>
 
-                            <h2
-                                className={`
-                                    privacy-title-font
-                                    text-xl
-                                    md:text-2xl
-                                    font-black
-                                    mb-3
-                                    ${
-                                        isDark
-                                            ? "text-white"
-                                            : "text-custom-dark"
-                                    }
-                                `}
-                            >
-                                1. தகவல் சேகரிப்பு
-                            </h2>
+                        <div className={dividerClass} />
 
-                            <p
-                                className={`
-                                    privacy-body-font
-                                    text-sm
-                                    md:text-base
-                                    leading-8
-                                    ${
-                                        isDark
-                                            ? "text-gray-300"
-                                            : "text-gray-600"
-                                    }
-                                `}
-                            >
-                                DPI One-ன் முக்கிய நோக்கம் பேருந்து தொடர்பான
-                                தகவல்களை பயணிகளுக்கு வழங்குவதாகும்.
+                        <section>
+                            <h2 className={headingClass}>2. கணக்கு தகவல்கள்</h2>
+                            <p className={bodyClass}>
+                                கணக்கை உருவாக்கி நிர்வகிக்க DPI One-ன் தற்போதைய
+                                account features மூலம் கீழ்கண்ட அடிப்படை தகவல்கள்
+                                சேமிக்கப்படலாம்:
                             </p>
 
-                            <p
-                                className={`
-                                    privacy-body-font
-                                    mt-3
-                                    text-sm
-                                    md:text-base
-                                    leading-8
-                                    ${
-                                        isDark
-                                            ? "text-gray-300"
-                                            : "text-gray-600"
-                                    }
-                                `}
-                            >
-                                DPI One தனிப்பட்ட தகவல்களை சேமிப்பதை
-                                நோக்கமாகக் கொண்டிருக்கவில்லை.
-                            </p>
-
-                            <p
-                                className={`
-                                    privacy-body-font
-                                    mt-3
-                                    text-sm
-                                    md:text-base
-                                    leading-8
-                                    ${
-                                        isDark
-                                            ? "text-gray-300"
-                                            : "text-gray-600"
-                                    }
-                                `}
-                            >
-                                பயனர்களின்:
-                            </p>
-
-                            <ul
-                                className={`
-                                    privacy-body-font
-                                    mt-3
-                                    pl-6
-                                    list-disc
-                                    space-y-2
-                                    text-sm
-                                    md:text-base
-                                    leading-8
-                                    ${
-                                        isDark
-                                            ? "text-gray-300"
-                                            : "text-gray-600"
-                                    }
-                                `}
-                            >
-                                <li>பெயர்</li>
+                            <ul className={listClass}>
+                                <li>முதல் பெயர்</li>
+                                <li>கடைசி பெயர்</li>
                                 <li>மின்னஞ்சல் முகவரி</li>
-                                <li>தொலைபேசி எண்</li>
-                                <li>வீட்டு முகவரி</li>
-                                <li>GPS / Location தகவல்</li>
-                                <li>பிற தனிப்பட்ட தகவல்கள்</li>
+                                <li>கணக்கு உருவாக்கப்பட்ட நேரம் போன்ற account metadata</li>
                             </ul>
 
-                            <p
-                                className={`
-                                    privacy-body-font
-                                    mt-3
-                                    text-sm
-                                    md:text-base
-                                    leading-8
-                                    ${
-                                        isDark
-                                            ? "text-gray-300"
-                                            : "text-gray-600"
-                                    }
-                                `}
-                            >
-                                ஆகியவை DPI One-ன் பேருந்து தகவல் சேவைக்காக
-                                சேமிக்கப்படுவதில்லை.
+                            <p className={`${bodyClass} mt-3`}>
+                                Email/Password மற்றும் Google Sign-In போன்ற Firebase
+                                Authentication வசதிகள் உள்நுழைவு மற்றும் கணக்கு
+                                மேலாண்மைக்காக பயன்படுத்தப்படுகின்றன. Firebase
+                                Authentication பயனர் profile-ல் email மற்றும்
+                                display name போன்ற basic properties வைத்திருக்கலாம்.
                             </p>
-
                         </section>
 
+                        <div className={dividerClass} />
 
-                        {/* DIVIDER */}
-                        <div
-                            className={`h-px ${
-                                isDark
-                                    ? "bg-gray-800"
-                                    : "bg-gray-100"
-                            }`}
-                        />
-
-
-                        {/* SECTION 2 */}
                         <section>
-
-                            <h2
-                                className={`
-                                    privacy-title-font
-                                    text-xl
-                                    md:text-2xl
-                                    font-black
-                                    mb-3
-                                    ${
-                                        isDark
-                                            ? "text-white"
-                                            : "text-custom-dark"
-                                    }
-                                `}
-                            >
-                                2. சேமிக்கப்படும் தகவல்கள்
-                            </h2>
-
-                            <p
-                                className={`
-                                    privacy-body-font
-                                    text-sm
-                                    md:text-base
-                                    leading-8
-                                    ${
-                                        isDark
-                                            ? "text-gray-300"
-                                            : "text-gray-600"
-                                    }
-                                `}
-                            >
-                                DPI One-ல் சேமிக்கப்படும் தகவல்கள் பேருந்து
-                                சேவை தொடர்பான தகவல்கள் மட்டுமே.
+                            <h2 className={headingClass}>3. Saved மற்றும் Favourite தகவல்கள்</h2>
+                            <p className={bodyClass}>
+                                பயனர் சேமிக்கும் பேருந்து routes மற்றும் favourite
+                                routes போன்ற account-specific தகவல்கள், அந்த பயனர்
+                                மீண்டும் அணுகுவதற்காக அவரது account-க்கு கீழ்
+                                சேமிக்கப்படலாம்.
                             </p>
 
-                            <p
-                                className={`
-                                    privacy-body-font
-                                    mt-3
-                                    text-sm
-                                    md:text-base
-                                    leading-8
-                                    ${
-                                        isDark
-                                            ? "text-gray-300"
-                                            : "text-gray-600"
-                                    }
-                                `}
-                            >
-                                உதாரணமாக:
+                            <p className={`${bodyClass} mt-3`}>
+                                இவை பிற பயனர்களின் account data-வுடன் கலக்காமல்,
+                                user-specific access rules மூலம் பாதுகாக்கப்பட வேண்டும்.
+                            </p>
+                        </section>
+
+                        <div className={dividerClass} />
+
+                        <section>
+                            <h2 className={headingClass}>4. பயனர் வழங்கும் route தகவல்கள்</h2>
+                            <p className={bodyClass}>
+                                பயனர் ஒரு பேருந்து route-ஐ upload செய்யும் போது,
+                                submission-ல் வழங்கப்படும் route மற்றும் bus-related
+                                தகவல்கள் DPI One-ல் சேமிக்கப்படலாம்.
                             </p>
 
-                            <ul
-                                className={`
-                                    privacy-body-font
-                                    mt-3
-                                    pl-6
-                                    list-disc
-                                    space-y-2
-                                    text-sm
-                                    md:text-base
-                                    leading-8
-                                    ${
-                                        isDark
-                                            ? "text-gray-300"
-                                            : "text-gray-600"
-                                    }
-                                `}
-                            >
-                                <li>பேருந்து வழித்தடம்</li>
-                                <li>தொடக்க இடம் மற்றும் சேருமிடம்</li>
-                                <li>பேருந்து நேரம்</li>
-                                <li>பேருந்து நிறுத்தங்கள்</li>
-                                <li>பேருந்து எண் / route தகவல்கள்</li>
-                                <li>
-                                    பேருந்து சேவையை விளக்கும் பிற
-                                    தொடர்புடைய தகவல்கள்
-                                </li>
+                            <p className={`${bodyClass} mt-3`}>
+                                இந்த தகவல்கள் review, approval மற்றும் பயணிகளுக்கு
+                                route information-ஐ காட்டுதல் போன்ற சேவை
+                                செயல்பாடுகளுக்காக பயன்படுத்தப்படலாம்.
+                            </p>
+
+                            <p className={`${bodyClass} mt-3`}>
+                                Route தகவல்களுக்குள் தேவையற்ற தனிப்பட்ட தகவல்களை
+                                சேர்க்க வேண்டாம். தவறுதலாக சேர்க்கப்பட்ட தனிப்பட்ட
+                                தகவல்கள் சேவை தேவைக்கு ஏற்ப அகற்றப்படலாம்.
+                            </p>
+                        </section>
+
+                        <div className={dividerClass} />
+
+                        <section>
+                            <h2 className={headingClass}>5. சேகரிக்கப்படாத profile தகவல்கள்</h2>
+                            <p className={bodyClass}>
+                                DPI One-ன் தற்போதைய AccountPage செயல்பாடுகளில்
+                                phone number, வீட்டு முகவரி அல்லது GPS/location
+                                தகவல்கள் profile தகவல்களாக கேட்கப்படுவதில்லை.
+                            </p>
+
+                            <p className={`${bodyClass} mt-3`}>
+                                Future features அல்லது வேறு சேவைகள் மூலம் data
+                                practices மாறினால், இந்த Privacy Policy அதற்கேற்ப
+                                புதுப்பிக்கப்படும்.
+                            </p>
+                        </section>
+
+                        <div className={dividerClass} />
+
+                        <section>
+                            <h2 className={headingClass}>6. தகவல்களின் பயன்பாடு</h2>
+                            <ul className={listClass}>
+                                <li>கணக்கை உருவாக்கவும் நிர்வகிக்கவும்</li>
+                                <li>உள்நுழைவு மற்றும் email verification போன்ற account security செயல்பாடுகளுக்கு</li>
+                                <li>Saved மற்றும் Favourite route வசதிகளை வழங்கவும்</li>
+                                <li>பயனர் upload செய்த route submissions-ஐ நிர்வகிக்கவும்</li>
+                                <li>DPI One bus-information service-ஐ இயக்கவும் பராமரிக்கவும்</li>
                             </ul>
-
-                            <p
-                                className={`
-                                    privacy-body-font
-                                    mt-3
-                                    text-sm
-                                    md:text-base
-                                    leading-8
-                                    ${
-                                        isDark
-                                            ? "text-gray-300"
-                                            : "text-gray-600"
-                                    }
-                                `}
-                            >
-                                இந்த தகவல்கள் பயணிகளுக்கு பேருந்து சேவையை
-                                எளிதாகக் கண்டறிந்து பயன்படுத்த உதவும்
-                                நோக்கத்திற்காக மட்டுமே பயன்படுத்தப்படுகின்றன.
-                            </p>
-
                         </section>
 
+                        <div className={dividerClass} />
 
-                        {/* DIVIDER */}
-                        <div
-                            className={`h-px ${
-                                isDark
-                                    ? "bg-gray-800"
-                                    : "bg-gray-100"
-                            }`}
-                        />
-
-
-                        {/* SECTION 3 */}
                         <section>
-
-                            <h2
-                                className={`
-                                    privacy-title-font
-                                    text-xl
-                                    md:text-2xl
-                                    font-black
-                                    mb-3
-                                    ${
-                                        isDark
-                                            ? "text-white"
-                                            : "text-custom-dark"
-                                    }
-                                `}
-                            >
-                                3. தனிப்பட்ட தகவல்கள்
-                            </h2>
-
-                            <p
-                                className={`
-                                    privacy-body-font
-                                    text-sm
-                                    md:text-base
-                                    leading-8
-                                    ${
-                                        isDark
-                                            ? "text-gray-300"
-                                            : "text-gray-600"
-                                    }
-                                `}
-                            >
-                                DPI One-ன் பேருந்து தகவல் சேவைக்காக
-                                பயனர்களின் தனிப்பட்ட தகவல்கள்
-                                சேமிக்கப்படுவதில்லை.
+                            <h2 className={headingClass}>7. தகவல் பாதுகாப்பு</h2>
+                            <p className={bodyClass}>
+                                DPI One Firebase Authentication மற்றும் Cloud Firestore
+                                போன்ற Firebase சேவைகளை பயன்படுத்துகிறது. Firestore
+                                Security Rules மூலம் authentication, authorization
+                                மற்றும் data validation போன்ற access controls அமைக்க
+                                முடியும். Firebase பல சேவைகளில் data-in-transit
+                                encryption மற்றும் data-at-rest encryption போன்ற
+                                பாதுகாப்பு நடவடிக்கைகளை வழங்குகிறது.
                             </p>
 
-                            <p
-                                className={`
-                                    privacy-body-font
-                                    mt-3
-                                    text-sm
-                                    md:text-base
-                                    leading-8
-                                    ${
-                                        isDark
-                                            ? "text-gray-300"
-                                            : "text-gray-600"
-                                    }
-                                `}
-                            >
-                                ஒரு பயனர் வழங்கும் பேருந்து தகவலில்
-                                தவறுதலாக தனிப்பட்ட தகவல் சேர்க்கப்பட்டிருந்தால்,
-                                அந்தத் தகவலை தேவையற்றதாகக் கருதி
-                                அகற்றுவதற்கான நடவடிக்கை எடுக்கப்படலாம்.
+                            <p className={`${bodyClass} mt-3`}>
+                                இருப்பினும், இணையத்தில் எந்த சேவையும் முழுமையான
+                                பாதுகாப்பை உத்தரவாதப்படுத்த முடியாது. பயனர்கள் தங்கள்
+                                password மற்றும் account credentials-ஐ பாதுகாப்பாக
+                                வைத்திருக்க வேண்டும்.
                             </p>
-
                         </section>
 
+                        <div className={dividerClass} />
 
-                        {/* DIVIDER */}
-                        <div
-                            className={`h-px ${
-                                isDark
-                                    ? "bg-gray-800"
-                                    : "bg-gray-100"
-                            }`}
-                        />
-
-
-                        {/* SECTION 4 */}
                         <section>
-
-                            <h2
-                                className={`
-                                    privacy-title-font
-                                    text-xl
-                                    md:text-2xl
-                                    font-black
-                                    mb-3
-                                    ${
-                                        isDark
-                                            ? "text-white"
-                                            : "text-custom-dark"
-                                    }
-                                `}
-                            >
-                                4. தகவல்களின் பயன்பாடு
-                            </h2>
-
-                            <p
-                                className={`
-                                    privacy-body-font
-                                    text-sm
-                                    md:text-base
-                                    leading-8
-                                    ${
-                                        isDark
-                                            ? "text-gray-300"
-                                            : "text-gray-600"
-                                    }
-                                `}
-                            >
-                                சேமிக்கப்படும் பேருந்து தகவல்கள் DPI One-ல்
-                                பேருந்து வழித்தடங்கள், நேரங்கள் மற்றும்
-                                நிறுத்தங்களை பயணிகளுக்குக் காண்பிப்பதற்காக
-                                பயன்படுத்தப்படுகின்றன.
+                            <h2 className={headingClass}>8. தகவல் பகிர்வு</h2>
+                            <p className={bodyClass}>
+                                Approved செய்யப்பட்ட bus route information DPI One-ல்
+                                பொதுப் பயனர்களுக்குக் காட்டப்படலாம். Account profile
+                                தகவல்கள் public route information-இன் ஒரு பகுதியாக
+                                காட்டப்பட வேண்டியதில்லை.
                             </p>
 
-                            <p
-                                className={`
-                                    privacy-body-font
-                                    mt-3
-                                    text-sm
-                                    md:text-base
-                                    leading-8
-                                    ${
-                                        isDark
-                                            ? "text-gray-300"
-                                            : "text-gray-600"
-                                    }
-                                `}
-                            >
-                                இந்த தகவல்கள் தனிப்பட்ட நபரைப் பற்றிய
-                                profile உருவாக்குவதற்காக
-                                பயன்படுத்தப்படுவதில்லை.
+                            <p className={`${bodyClass} mt-3`}>
+                                Authentication மற்றும் database செயல்பாடுகளுக்கு
+                                பயன்படுத்தப்படும் Firebase போன்ற service providers,
+                                அந்த சேவைகளை வழங்க தேவையான அளவில் data-ஐ process செய்யலாம்.
                             </p>
-
                         </section>
 
+                        <div className={dividerClass} />
 
-                        {/* DIVIDER */}
-                        <div
-                            className={`h-px ${
-                                isDark
-                                    ? "bg-gray-800"
-                                    : "bg-gray-100"
-                            }`}
-                        />
-
-
-                        {/* SECTION 5 */}
                         <section>
-
-                            <h2
-                                className={`
-                                    privacy-title-font
-                                    text-xl
-                                    md:text-2xl
-                                    font-black
-                                    mb-3
-                                    ${
-                                        isDark
-                                            ? "text-white"
-                                            : "text-custom-dark"
-                                    }
-                                `}
-                            >
-                                5. தகவல் பாதுகாப்பு
-                            </h2>
-
-                            <p
-                                className={`
-                                    privacy-body-font
-                                    text-sm
-                                    md:text-base
-                                    leading-8
-                                    ${
-                                        isDark
-                                            ? "text-gray-300"
-                                            : "text-gray-600"
-                                    }
-                                `}
-                            >
-                                DPI One-ல் சேமிக்கப்படும் பேருந்து
-                                தொடர்பான தகவல்களை பாதுகாப்பாக
-                                நிர்வகிக்க பொருத்தமான நடவடிக்கைகள்
-                                எடுக்கப்படுகின்றன.
+                            <h2 className={headingClass}>9. Account deletion</h2>
+                            <p className={bodyClass}>
+                                பயனர் AccountPage மூலம் account deletion தொடங்கலாம்.
+                                தற்போதைய flow, Firebase Authentication account மற்றும்
+                                user profile document-ஐ நீக்க முயற்சிக்கிறது.
                             </p>
 
+                            <p className={`${bodyClass} mt-3`}>
+                                Saved routes, favourite routes அல்லது uploaded route
+                                records போன்ற தொடர்புடைய records அனைத்தும் account
+                                deletion-ன் மூலம் தானாக அழிக்கப்படும் என்று இப்போதைய
+                                client flow உத்தரவாதம் அளிக்கவில்லை.
+                            </p>
                         </section>
 
+                        <div className={dividerClass} />
 
-                        {/* DIVIDER */}
-                        <div
-                            className={`h-px ${
-                                isDark
-                                    ? "bg-gray-800"
-                                    : "bg-gray-100"
-                            }`}
-                        />
-
-
-                        {/* SECTION 6 */}
                         <section>
-
-                            <h2
-                                className={`
-                                    privacy-title-font
-                                    text-xl
-                                    md:text-2xl
-                                    font-black
-                                    mb-3
-                                    ${
-                                        isDark
-                                            ? "text-white"
-                                            : "text-custom-dark"
-                                    }
-                                `}
-                            >
-                                6. Privacy Policy மாற்றங்கள்
-                            </h2>
-
-                            <p
-                                className={`
-                                    privacy-body-font
-                                    text-sm
-                                    md:text-base
-                                    leading-8
-                                    ${
-                                        isDark
-                                            ? "text-gray-300"
-                                            : "text-gray-600"
-                                    }
-                                `}
-                            >
-                                DPI One-ன் செயல்பாடுகளில் மாற்றங்கள்
-                                ஏற்பட்டால், அதற்கேற்ப இந்த Privacy Policy
-                                புதுப்பிக்கப்படலாம்.
+                            <h2 className={headingClass}>10. Browser storage</h2>
+                            <p className={bodyClass}>
+                                DPI One சில browser-side features க்காக local/session
+                                browser storage பயன்படுத்தக்கூடும். உதாரணமாக login
+                                persistence மற்றும் சில client-side rate-limit state
+                                போன்ற functionality browser storage-ஐ பயன்படுத்தலாம்.
                             </p>
-
-                            <p
-                                className={`
-                                    privacy-body-font
-                                    mt-3
-                                    text-sm
-                                    md:text-base
-                                    leading-8
-                                    ${
-                                        isDark
-                                            ? "text-gray-300"
-                                            : "text-gray-600"
-                                    }
-                                `}
-                            >
-                                புதுப்பிக்கப்பட்ட Privacy Policy
-                                DPI One-ல் வெளியிடப்படும்.
-                            </p>
-
                         </section>
 
+                        <div className={dividerClass} />
 
-                        {/* DIVIDER */}
-                        <div
-                            className={`h-px ${
-                                isDark
-                                    ? "bg-gray-800"
-                                    : "bg-gray-100"
-                            }`}
-                        />
-
-
-                        {/* SECTION 7 */}
                         <section>
-
-                            <h2
-                                className={`
-                                    privacy-title-font
-                                    text-xl
-                                    md:text-2xl
-                                    font-black
-                                    mb-3
-                                    ${
-                                        isDark
-                                            ? "text-white"
-                                            : "text-custom-dark"
-                                    }
-                                `}
-                            >
-                                7. தொடர்பு
-                            </h2>
-
-                            <p
-                                className={`
-                                    privacy-body-font
-                                    text-sm
-                                    md:text-base
-                                    leading-8
-                                    ${
-                                        isDark
-                                            ? "text-gray-300"
-                                            : "text-gray-600"
-                                    }
-                                `}
-                            >
-                                இந்த Privacy Policy அல்லது DPI One-ல்
-                                சேமிக்கப்படும் தகவல்கள் தொடர்பாக ஏதேனும்
-                                கேள்விகள் இருந்தால், DPI One வழங்கும்
-                                தொடர்பு வழிமுறைகள் மூலம் எங்களை அணுகலாம்.
+                            <h2 className={headingClass}>11. Reward Points</h2>
+                            <p className={bodyClass}>
+                                DPI One-ன் தற்போதைய account system-ல் Reward Points
+                                feature இல்லை. Reward Points தொடர்பான புதிய account
+                                data சேமிக்கப்படாது.
                             </p>
-
                         </section>
 
+                        <div className={dividerClass} />
+
+                        <section>
+                            <h2 className={headingClass}>12. Policy மாற்றங்கள்</h2>
+                            <p className={bodyClass}>
+                                DPI One-ன் features, data practices அல்லது security
+                                controls மாறினால் இந்த Privacy Policy புதுப்பிக்கப்படலாம்.
+                                புதுப்பிக்கப்பட்ட பதிப்பில் புதிய update date காட்டப்படும்.
+                            </p>
+                        </section>
+
+                        <div className={dividerClass} />
+
+                        <section>
+                            <h2 className={headingClass}>13. தொடர்பு</h2>
+                            <p className={bodyClass}>
+                                இந்த Privacy Policy அல்லது DPI One-ன் data practices
+                                குறித்து கேள்விகள் இருந்தால், DPI One வழங்கும்
+                                அதிகாரப்பூர்வ தொடர்பு வழிமுறைகள் மூலம் அணுகலாம்.
+                            </p>
+                        </section>
+
+                        <div
+                            className={`
+                                rounded-2xl
+                                border
+                                p-4
+                                md:p-5
+                                ${
+                                    isDark
+                                        ? "bg-gray-950 border-gray-800"
+                                        : "bg-gray-50 border-gray-100"
+                                }
+                            `}
+                        >
+                            <div className="flex items-start gap-3">
+                                <i className="bi bi-info-circle text-brand mt-1" />
+                                <p
+                                    className={`
+                                        privacy-font
+                                        text-xs
+                                        md:text-sm
+                                        leading-7
+                                        ${
+                                            isDark
+                                                ? "text-gray-400"
+                                                : "text-gray-500"
+                                        }
+                                    `}
+                                >
+                                    இந்த Privacy Policy DPI One-ன் தற்போதைய
+                                    பயன்பாட்டு செயல்பாடுகளை அடிப்படையாகக் கொண்டது.
+                                    இது சட்ட ஆலோசனை அல்ல.
+                                </p>
+                            </div>
+                        </div>
                     </div>
-
                 </section>
 
-
-                {/* FOOTER */}
                 <div className="py-8 text-center">
-
                     <p
                         className={`
-                            privacy-body-font
+                            privacy-font
                             text-xs
-                            ${
-                                isDark
-                                    ? "text-gray-500"
-                                    : "text-gray-400"
-                            }
+                            ${isDark ? "text-gray-500" : "text-gray-400"}
                         `}
                     >
                         © {new Date().getFullYear()} DPI One
                     </p>
-
                 </div>
-
             </div>
         </main>
     );
