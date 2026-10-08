@@ -93,7 +93,7 @@ const PrivacyPolicy = ({ isDark = false }) => {
                 </button>
 
                 <header className="mb-6 md:mb-8">
-                    <p className="text-[10px] uppercase tracking-[0.18em] font-black text-brand mb-2">
+                    <p className="privacy-font text-[10px] uppercase tracking-[0.18em] font-black text-brand mb-2">
                         Privacy Policy
                     </p>
 
@@ -157,8 +157,10 @@ const PrivacyPolicy = ({ isDark = false }) => {
                     </div>
 
                     <div className="space-y-8">
+                        {/* 1. Introduction */}
                         <section>
                             <h2 className={headingClass}>1. அறிமுகம்</h2>
+
                             <p className={bodyClass}>
                                 DPI One என்பது பேருந்து வழித்தடங்கள், நேரங்கள்,
                                 நிறுத்தங்கள் மற்றும் தொடர்புடைய பயணத் தகவல்களை
@@ -170,8 +172,10 @@ const PrivacyPolicy = ({ isDark = false }) => {
 
                         <div className={dividerClass} />
 
+                        {/* 2. Account Information */}
                         <section>
                             <h2 className={headingClass}>2. கணக்கு தகவல்கள்</h2>
+
                             <p className={bodyClass}>
                                 கணக்கை உருவாக்கி நிர்வகிக்க DPI One-ன் தற்போதைய
                                 account features மூலம் கீழ்கண்ட அடிப்படை தகவல்கள்
@@ -196,8 +200,12 @@ const PrivacyPolicy = ({ isDark = false }) => {
 
                         <div className={dividerClass} />
 
+                        {/* 3. Saved & Favourite Information */}
                         <section>
-                            <h2 className={headingClass}>3. Saved மற்றும் Favourite தகவல்கள்</h2>
+                            <h2 className={headingClass}>
+                                3. Saved மற்றும் Favourite தகவல்கள்
+                            </h2>
+
                             <p className={bodyClass}>
                                 பயனர் சேமிக்கும் பேருந்து routes மற்றும் favourite
                                 routes போன்ற account-specific தகவல்கள், அந்த பயனர்
@@ -213,8 +221,12 @@ const PrivacyPolicy = ({ isDark = false }) => {
 
                         <div className={dividerClass} />
 
+                        {/* 4. User Submitted Route Information */}
                         <section>
-                            <h2 className={headingClass}>4. பயனர் வழங்கும் route தகவல்கள்</h2>
+                            <h2 className={headingClass}>
+                                4. பயனர் வழங்கும் route தகவல்கள்
+                            </h2>
+
                             <p className={bodyClass}>
                                 பயனர் ஒரு பேருந்து route-ஐ upload செய்யும் போது,
                                 submission-ல் வழங்கப்படும் route மற்றும் bus-related
@@ -236,8 +248,12 @@ const PrivacyPolicy = ({ isDark = false }) => {
 
                         <div className={dividerClass} />
 
+                        {/* 5. Profile Information Not Collected */}
                         <section>
-                            <h2 className={headingClass}>5. சேகரிக்கப்படாத profile தகவல்கள்</h2>
+                            <h2 className={headingClass}>
+                                5. சேகரிக்கப்படாத profile தகவல்கள்
+                            </h2>
+
                             <p className={bodyClass}>
                                 DPI One-ன் தற்போதைய AccountPage செயல்பாடுகளில்
                                 phone number, வீட்டு முகவரி அல்லது GPS/location
@@ -253,43 +269,70 @@ const PrivacyPolicy = ({ isDark = false }) => {
 
                         <div className={dividerClass} />
 
+                        {/* 6. Use of Information */}
                         <section>
                             <h2 className={headingClass}>6. தகவல்களின் பயன்பாடு</h2>
+
                             <ul className={listClass}>
                                 <li>கணக்கை உருவாக்கவும் நிர்வகிக்கவும்</li>
-                                <li>உள்நுழைவு மற்றும் email verification போன்ற account security செயல்பாடுகளுக்கு</li>
-                                <li>Saved மற்றும் Favourite route வசதிகளை வழங்கவும்</li>
-                                <li>பயனர் upload செய்த route submissions-ஐ நிர்வகிக்கவும்</li>
-                                <li>DPI One bus-information service-ஐ இயக்கவும் பராமரிக்கவும்</li>
+
+                                <li>
+                                    உள்நுழைவு மற்றும் email verification போன்ற
+                                    account security செயல்பாடுகளுக்கு
+                                </li>
+
+                                <li>
+                                    Saved மற்றும் Favourite route வசதிகளை வழங்கவும்
+                                </li>
+
+                                <li>
+                                    பயனர் upload செய்த route submissions-ஐ
+                                    நிர்வகிக்கவும்
+                                </li>
+
+                                <li>
+                                    DPI One bus-information service-ஐ இயக்கவும்
+                                    பராமரிக்கவும்
+                                </li>
                             </ul>
                         </section>
 
                         <div className={dividerClass} />
 
+                        {/* 7. Information Security */}
                         <section>
-                            <h2 className={headingClass}>7. தகவல் பாதுகாப்பு</h2>
+                            <h2 className={headingClass}>
+                                7. தகவல் பாதுகாப்பு
+                            </h2>
+
                             <p className={bodyClass}>
-                                DPI One Firebase Authentication மற்றும் Cloud Firestore
-                                போன்ற Firebase சேவைகளை பயன்படுத்துகிறது. Firestore
-                                Security Rules மூலம் authentication, authorization
-                                மற்றும் data validation போன்ற access controls அமைக்க
-                                முடியும். Firebase பல சேவைகளில் data-in-transit
-                                encryption மற்றும் data-at-rest encryption போன்ற
-                                பாதுகாப்பு நடவடிக்கைகளை வழங்குகிறது.
+                                DPI One உங்கள் கணக்கு மற்றும் தகவல்களின் பாதுகாப்பை
+                                முக்கியமாகக் கருதுகிறது. உங்கள் தகவல்களை பாதுகாப்பாக
+                                நிர்வகிக்க தேவையான பாதுகாப்பு நடவடிக்கைகள்
+                                பயன்படுத்தப்படுகின்றன.
+                            </p>
+
+                            <p className={`${bodyClass} mt-3`}>
+                                உங்கள் கணக்கு மற்றும் தகவல்களை பாதுகாப்பாக வைத்திருக்க
+                                தேவையான பாதுகாப்பு நடவடிக்கைகள் அமைக்கப்பட்டுள்ளன.
+                                இணையத்தில் அனுப்பப்படும் மற்றும் சேமித்து வைக்கப்படும்
+                                தகவல்களுக்கும் பாதுகாப்பு நடவடிக்கைகள் பயன்படுத்தப்படுகின்றன.
                             </p>
 
                             <p className={`${bodyClass} mt-3`}>
                                 இருப்பினும், இணையத்தில் எந்த சேவையும் முழுமையான
-                                பாதுகாப்பை உத்தரவாதப்படுத்த முடியாது. பயனர்கள் தங்கள்
-                                password மற்றும் account credentials-ஐ பாதுகாப்பாக
-                                வைத்திருக்க வேண்டும்.
+                                பாதுகாப்பை உறுதி செய்ய முடியாது. எனவே, உங்கள்
+                                கடவுச்சொல் மற்றும் கணக்கு உள்நுழைவு விவரங்களை
+                                பாதுகாப்பாக வைத்திருப்பது முக்கியம்.
                             </p>
                         </section>
 
                         <div className={dividerClass} />
 
+                        {/* 8. Information Sharing */}
                         <section>
                             <h2 className={headingClass}>8. தகவல் பகிர்வு</h2>
+
                             <p className={bodyClass}>
                                 Approved செய்யப்பட்ட bus route information DPI One-ல்
                                 பொதுப் பயனர்களுக்குக் காட்டப்படலாம். Account profile
@@ -306,8 +349,10 @@ const PrivacyPolicy = ({ isDark = false }) => {
 
                         <div className={dividerClass} />
 
+                        {/* 9. Account Deletion */}
                         <section>
                             <h2 className={headingClass}>9. Account deletion</h2>
+
                             <p className={bodyClass}>
                                 பயனர் AccountPage மூலம் account deletion தொடங்கலாம்.
                                 தற்போதைய flow, Firebase Authentication account மற்றும்
@@ -324,8 +369,10 @@ const PrivacyPolicy = ({ isDark = false }) => {
 
                         <div className={dividerClass} />
 
+                        {/* 10. Browser Storage */}
                         <section>
                             <h2 className={headingClass}>10. Browser storage</h2>
+
                             <p className={bodyClass}>
                                 DPI One சில browser-side features க்காக local/session
                                 browser storage பயன்படுத்தக்கூடும். உதாரணமாக login
@@ -336,8 +383,10 @@ const PrivacyPolicy = ({ isDark = false }) => {
 
                         <div className={dividerClass} />
 
+                        {/* 11. Reward Points */}
                         <section>
                             <h2 className={headingClass}>11. Reward Points</h2>
+
                             <p className={bodyClass}>
                                 DPI One-ன் தற்போதைய account system-ல் Reward Points
                                 feature இல்லை. Reward Points தொடர்பான புதிய account
@@ -347,8 +396,10 @@ const PrivacyPolicy = ({ isDark = false }) => {
 
                         <div className={dividerClass} />
 
+                        {/* 12. Policy Changes */}
                         <section>
                             <h2 className={headingClass}>12. Policy மாற்றங்கள்</h2>
+
                             <p className={bodyClass}>
                                 DPI One-ன் features, data practices அல்லது security
                                 controls மாறினால் இந்த Privacy Policy புதுப்பிக்கப்படலாம்.
@@ -358,8 +409,10 @@ const PrivacyPolicy = ({ isDark = false }) => {
 
                         <div className={dividerClass} />
 
+                        {/* 13. Contact */}
                         <section>
                             <h2 className={headingClass}>13. தொடர்பு</h2>
+
                             <p className={bodyClass}>
                                 இந்த Privacy Policy அல்லது DPI One-ன் data practices
                                 குறித்து கேள்விகள் இருந்தால், DPI One வழங்கும்
@@ -367,6 +420,7 @@ const PrivacyPolicy = ({ isDark = false }) => {
                             </p>
                         </section>
 
+                        {/* Disclaimer Note */}
                         <div
                             className={`
                                 rounded-2xl
@@ -382,6 +436,7 @@ const PrivacyPolicy = ({ isDark = false }) => {
                         >
                             <div className="flex items-start gap-3">
                                 <i className="bi bi-info-circle text-brand mt-1" />
+
                                 <p
                                     className={`
                                         privacy-font

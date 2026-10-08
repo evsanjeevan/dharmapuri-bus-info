@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+
 import { db, auth } from "./firebase.jsx";
 
 import {
@@ -54,10 +55,12 @@ const timingOptions = [
    SANITIZATION
 ========================================================= */
 
+const UNSAFE_CHARS = /[\u0000-\u001F\u007F<>]/g;
+
 const sanitize = (value) =>
   typeof value === "string"
     ? value
-        .replace(/[<>"'`\\;=(){}\[\]|&]/g, "")
+        .replace(UNSAFE_CHARS, "")
         .replace(/\s{2,}/g, " ")
         .trim()
         .slice(0, 60)
@@ -65,10 +68,30 @@ const sanitize = (value) =>
 
 const sanitizeTyping = (value) =>
   typeof value === "string"
-    ? value
-        .replace(/[<>"'`\\;=(){}\[\]|&]/g, "")
-        .slice(0, 60)
+    ? value.replace(UNSAFE_CHARS, "").slice(0, 60)
     : "";
+
+const normalizeKey = (value) =>
+  sanitize(value || "").toLowerCase();
+
+const formatKm = (value) => {
+  if (typeof value === "number" && value > 0) {
+    return `${Math.round(value * 10) / 10} km`;
+  }
+
+  return sanitize(value || "");
+};
+
+const formatMins = (value) => {
+  if (typeof value === "number" && value > 0) {
+    const h = Math.floor(value / 60);
+    const m = Math.round(value % 60);
+
+    return h > 0 ? `${h}h ${m}m` : `${m}m`;
+  }
+
+  return sanitize(value || "");
+};
 
 const sanitizeBusNo = (value) =>
   typeof value === "string"
@@ -109,19 +132,17 @@ const sanitizeBusDoc = (snapshot) => {
 
     arrivalTime: sanitize(data.arrivalTime || ""),
 
-    km: sanitize(data.km || ""),
+    km: formatKm(data.km ?? data.distanceKm),
 
-    duration: sanitize(data.duration || ""),
+    duration: formatMins(
+      data.duration ?? data.durationMins
+    ),
 
     basePrice:
-      typeof data.basePrice === "number" && data.basePrice >= 0
+      typeof data.basePrice === "number" &&
+      data.basePrice >= 0
         ? data.basePrice
         : 0,
-
-    seats:
-      typeof data.seats === "number"
-        ? data.seats
-        : 30,
 
     stops: Array.isArray(data.stops)
       ? data.stops.map((stop) => ({
@@ -209,7 +230,6 @@ const DpiToggle = ({
   );
 };
 
-
 const homeDarkCss = `
   .dpi-home-dark {
     background: #0B0D12 !important;
@@ -271,14 +291,39 @@ const homeDarkCss = `
     --tw-shadow-color: rgba(0, 0, 0, 0.35) !important;
   }
 
-  .dpi-home-dark .hover\\:bg-\\[\\#F7F8FC\\]:hover {
+  .dpi-home-dark .hover\\:bg-\\[\\#F7F8FC\\]\\:hover {
     background-color: #1A1D25 !important;
   }
 
-  .dpi-home-dark .hover\\:bg-\\[\\#F4F2FF\\]:hover {
+  .dpi-home-dark .hover\\:bg-\\[\\#F4F2FF\\]\\:hover {
     background-color: #302B55 !important;
   }
 `;
+
+const PlaceSuggestions = ({
+  items,
+  iconClass,
+  onSelect,
+}) => (
+  <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-[999] max-h-[230px] overflow-y-auto rounded-[14px] border border-[#E7E7EF] bg-white p-1.5 shadow-[0_18px_45px_rgba(15,23,42,0.12)]">
+    {items.map((city) => (
+      <button
+        key={city}
+        type="button"
+        onClick={() => onSelect(city)}
+        className="flex min-h-[44px] w-full items-center gap-2.5 rounded-[10px] px-3 py-2 text-left text-xs font-semibold text-[#374151] transition hover:bg-[#F4F2FF] hover:text-[#7667E8]"
+      >
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#F4F2FF] text-[#7667E8]">
+          <i className={`bi ${iconClass} text-xs`} />
+        </span>
+
+        <span className="truncate">
+          {city}
+        </span>
+      </button>
+    ))}
+  </div>
+);
 
 /* =========================================================
    HOMEPAGE
@@ -296,10 +341,9 @@ const HomePage = ({ isDark = false }) => {
   ------------------------------------------------------- */
 
   const [busNumber, setBusNumber] = useState("");
-
   const [startPoint, setStartPoint] = useState("");
-
-  const [destination, setDestination] = useState("");
+  const [destination, setDestination] =
+    useState("");
 
   const [selectedTimeFilter, setSelectedTimeFilter] =
     useState("");
@@ -309,7 +353,6 @@ const HomePage = ({ isDark = false }) => {
   ------------------------------------------------------- */
 
   const [buses, setBuses] = useState([]);
-
   const [isFetching, setIsFetching] =
     useState(true);
 
@@ -365,6 +408,9 @@ const HomePage = ({ isDark = false }) => {
   ------------------------------------------------------- */
 
   const [isEnabled, setIsEnabled] =
+    useState(false);
+
+  const [isSaving, setIsSaving] =
     useState(false);
 
   /* -------------------------------------------------------
@@ -537,8 +583,14 @@ const HomePage = ({ isDark = false }) => {
     const value =
       busNumber.trim().toLowerCase();
 
+    /*
+      IMPORTANT:
+      Do not show suggestions when the input
+      is empty. Suggestions appear only after
+      the user starts typing.
+    */
     if (!value) {
-      return allBusNumbers.slice(0, 7);
+      return [];
     }
 
     return allBusNumbers
@@ -583,69 +635,63 @@ const HomePage = ({ isDark = false }) => {
      TO SUGGESTIONS
   ====================================================== */
 
-  const destinationSuggestions = useMemo(() => {
-    const value =
-      destination.trim().toLowerCase();
+  const destinationSuggestions =
+    useMemo(() => {
+      const value =
+        destination.trim().toLowerCase();
 
-    if (!value) {
-      return [];
-    }
+      if (!value) {
+        return [];
+      }
 
-    return allCities
-      .filter((city) => {
-        const normalized =
-          city.toLowerCase();
+      return allCities
+        .filter((city) => {
+          const normalized =
+            city.toLowerCase();
 
-        return (
-          normalized.includes(value) &&
-          normalized !== value &&
-          normalized !==
-            startPoint.trim().toLowerCase()
-        );
-      })
-      .slice(0, 6);
-  }, [
-    destination,
-    allCities,
-    startPoint,
-  ]);
+          return (
+            normalized.includes(value) &&
+            normalized !== value &&
+            normalized !==
+              startPoint.trim().toLowerCase()
+          );
+        })
+        .slice(0, 6);
+    }, [
+      destination,
+      allCities,
+      startPoint,
+    ]);
 
   /* =======================================================
      CURRENT BUS KEY
   ====================================================== */
-
-  const currentBusKey = () =>
-    sanitizeBusNo(busNumber);
 
   /* =======================================================
      SAVED ROUTE CHECK
   ====================================================== */
 
   const isCurrentRouteSaved = useMemo(() => {
-    if (
-      !startPoint.trim() ||
-      !destination.trim() ||
-      !busNumber.trim()
-    ) {
+    const start =
+      normalizeKey(startPoint);
+
+    const dest =
+      normalizeKey(destination);
+
+    const bus =
+      sanitizeBusNo(busNumber).trim();
+
+    if (!start || !dest || !bus) {
       return false;
     }
 
-    const busKey =
-      currentBusKey();
-
     return savedRoutes.some(
       (route) =>
-        route.start?.toLowerCase() ===
-          startPoint
-            .trim()
-            .toLowerCase() &&
-        route.dest?.toLowerCase() ===
-          destination
-            .trim()
-            .toLowerCase() &&
+        normalizeKey(route.start) === start &&
+        normalizeKey(route.dest) === dest &&
         sanitizeBusNo(
           route.bus || ""
-        ) === busKey
+        ).trim() === bus
     );
   }, [
     startPoint,
@@ -664,13 +710,11 @@ const HomePage = ({ isDark = false }) => {
     }
 
     setIsSwapping(true);
-
     setValidationError("");
 
     const temporary = startPoint;
 
     setStartPoint(destination);
-
     setDestination(temporary);
 
     setIsSwapped(
@@ -687,11 +731,14 @@ const HomePage = ({ isDark = false }) => {
   ====================================================== */
 
   const toggleSaveRoute = async () => {
+    if (isSaving) {
+      return;
+    }
+
     if (!user) {
       setValidationError(
         "Sign in to save routes."
       );
-
       return;
     }
 
@@ -702,13 +749,12 @@ const HomePage = ({ isDark = false }) => {
       sanitize(destination);
 
     const bus =
-      sanitizeBusNo(busNumber);
+      sanitizeBusNo(busNumber).trim();
 
     if (!start || !dest || !bus) {
       setValidationError(
         "Enter bus number, from and to before saving."
       );
-
       return;
     }
 
@@ -719,32 +765,29 @@ const HomePage = ({ isDark = false }) => {
       setValidationError(
         "Start and destination cannot be the same."
       );
-
       return;
     }
 
-    const documentKey =
-      `${start.toLowerCase()}_to_${dest.toLowerCase()}_${bus.toLowerCase()}`;
+    setValidationError("");
+    setIsSaving(true);
 
-    const reference = doc(
-      db,
-      "users",
-      user.uid,
-      "savedRoutes",
-      documentKey
+    const existing = savedRoutes.find(
+      (route) =>
+        normalizeKey(route.start) ===
+          start.toLowerCase() &&
+        normalizeKey(route.dest) ===
+          dest.toLowerCase() &&
+        sanitizeBusNo(
+          route.bus || ""
+        ).trim() === bus
     );
 
-    const existing =
-      savedRoutes.find(
-        (route) =>
-          route.start?.toLowerCase() ===
-            start.toLowerCase() &&
-          route.dest?.toLowerCase() ===
-            dest.toLowerCase() &&
-          sanitizeBusNo(
-            route.bus || ""
-          ) === bus
-      );
+    // "/" inside a place name would otherwise
+    // create an invalid document path
+    const documentKey =
+      `${start}_to_${dest}_${bus}`
+        .toLowerCase()
+        .replace(/\//g, "-");
 
     try {
       if (existing) {
@@ -758,13 +801,21 @@ const HomePage = ({ isDark = false }) => {
           )
         );
       } else {
-        await setDoc(reference, {
-          start,
-          dest,
-          bus,
-          createdAt:
-            serverTimestamp(),
-        });
+        await setDoc(
+          doc(
+            db,
+            "users",
+            user.uid,
+            "savedRoutes",
+            documentKey
+          ),
+          {
+            start,
+            dest,
+            bus,
+            createdAt: serverTimestamp(),
+          }
+        );
       }
     } catch (error) {
       console.error(
@@ -775,6 +826,8 @@ const HomePage = ({ isDark = false }) => {
       setValidationError(
         "Could not update the saved route. Please try again."
       );
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -790,23 +843,18 @@ const HomePage = ({ isDark = false }) => {
     );
 
     setStartPoint(
-      route.start || ""
+      sanitizeTyping(route.start || "")
     );
 
     setDestination(
-      route.dest || ""
+      sanitizeTyping(route.dest || "")
     );
 
     setSelectedTimeFilter("");
-
     setHasSearched(false);
-
     setMatchedRoutes([]);
-
     setValidationError("");
-
     setExpandedBusId(null);
-
     setActiveInput(null);
   };
 
@@ -852,23 +900,14 @@ const HomePage = ({ isDark = false }) => {
 
   const clearSearch = () => {
     setBusNumber("");
-
     setStartPoint("");
-
     setDestination("");
-
     setSelectedTimeFilter("");
-
     setValidationError("");
-
     setHasSearched(false);
-
     setMatchedRoutes([]);
-
     setExpandedBusId(null);
-
     setActiveInput(null);
-
     setIsSwapped(false);
   };
 
@@ -882,9 +921,7 @@ const HomePage = ({ isDark = false }) => {
     event.preventDefault();
 
     setActiveInput(null);
-
     setValidationError("");
-
     setExpandedBusId(null);
 
     const bus =
@@ -908,7 +945,6 @@ const HomePage = ({ isDark = false }) => {
       );
 
       setMatchedRoutes([]);
-
       return;
     }
 
@@ -924,7 +960,6 @@ const HomePage = ({ isDark = false }) => {
       );
 
       setMatchedRoutes([]);
-
       return;
     }
 
@@ -940,7 +975,6 @@ const HomePage = ({ isDark = false }) => {
       );
 
       setMatchedRoutes([]);
-
       return;
     }
 
@@ -959,7 +993,6 @@ const HomePage = ({ isDark = false }) => {
       );
 
       setMatchedRoutes([]);
-
       return;
     }
 
@@ -998,13 +1031,16 @@ const HomePage = ({ isDark = false }) => {
       });
 
     setMatchedRoutes(results);
-
     setHasSearched(true);
   };
 
   /* =======================================================
      SELECTED TIMING
   ====================================================== */
+
+  const darkStyle = isDark ? (
+    <style>{homeDarkCss}</style>
+  ) : null;
 
   const selectedTiming =
     timingOptions.find(
@@ -1020,8 +1056,13 @@ const HomePage = ({ isDark = false }) => {
 
   if (isFetching) {
     return (
-      <div className={`dpi-home-page ${isDark ? "dpi-home-dark" : ""} flex min-h-screen items-center justify-center bg-[#F7F8FC] px-6 font-[Montserrat,sans-serif] text-[#111827]`}>
-        {isDark && <style>{homeDarkCss}</style>}
+      <div
+        className={`dpi-home-page ${
+          isDark ? "dpi-home-dark" : ""
+        } flex min-h-screen items-center justify-center bg-[#F7F8FC] px-6 font-[Montserrat,sans-serif] text-[#111827]`}
+      >
+        {darkStyle}
+
         <div className="flex flex-col items-center gap-4 text-center">
           <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#ECE9FF] border-t-[#7667E8]" />
 
@@ -1039,8 +1080,13 @@ const HomePage = ({ isDark = false }) => {
 
   if (fetchError) {
     return (
-      <div className={`dpi-home-page ${isDark ? "dpi-home-dark" : ""} flex min-h-screen items-center justify-center bg-[#F7F8FC] px-6 font-[Montserrat,sans-serif]`}>
-        {isDark && <style>{homeDarkCss}</style>}
+      <div
+        className={`dpi-home-page ${
+          isDark ? "dpi-home-dark" : ""
+        } flex min-h-screen items-center justify-center bg-[#F7F8FC] px-6 font-[Montserrat,sans-serif]`}
+      >
+        {darkStyle}
+
         <div className="w-full max-w-sm rounded-3xl border border-[#E7E7EF] bg-white p-8 text-center shadow-[0_12px_40px_rgba(17,24,39,0.08)]">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-500">
             <i className="bi bi-wifi-off text-2xl" />
@@ -1073,10 +1119,14 @@ const HomePage = ({ isDark = false }) => {
   ====================================================== */
 
   return (
-    <div className={`dpi-home-page ${isDark ? "dpi-home-dark" : ""} min-h-screen overflow-x-hidden bg-[#F7F8FC] font-[Montserrat,sans-serif] text-[#111827]`}>
-      {isDark && <style>{homeDarkCss}</style>}
-      <main>
+    <div
+      className={`dpi-home-page ${
+        isDark ? "dpi-home-dark" : ""
+      } min-h-screen overflow-x-hidden bg-[#F7F8FC] font-[Montserrat,sans-serif] text-[#111827]`}
+    >
+      {darkStyle}
 
+      <main>
         {/* =====================================================
             HERO
         ====================================================== */}
@@ -1090,15 +1140,14 @@ const HomePage = ({ isDark = false }) => {
 
           <div className="relative mx-auto max-w-5xl px-5 pb-20 pt-12 sm:px-8 sm:pb-24 sm:pt-16 lg:px-10 lg:pt-20">
             <div className="max-w-3xl">
-
               <div className="inline-flex items-center gap-2 rounded-full border border-[#DDD8FA] bg-[#F4F2FF] px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.08em] text-[#6657D8]">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#7667E8]" />
-
                 Dharmapuri Bus Information
               </div>
 
               <h1 className="mt-5 max-w-3xl text-4xl font-extrabold leading-[1.06] tracking-[-0.045em] text-[#111827] sm:text-5xl lg:text-[60px]">
                 Find the right bus.
+
                 <span className="block text-[#7667E8]">
                   Reach your destination.
                 </span>
@@ -1108,7 +1157,6 @@ const HomePage = ({ isDark = false }) => {
                 Search Dharmapuri bus services by
                 bus number, route and timing.
               </p>
-
             </div>
           </div>
         </section>
@@ -1122,10 +1170,9 @@ const HomePage = ({ isDark = false }) => {
             ref={formRef}
             className="mx-auto -mt-10 w-full max-w-4xl rounded-[24px] border border-[#E7E7EF] bg-white p-5 shadow-[0_18px_50px_rgba(31,25,80,0.075)] sm:-mt-12 sm:p-6 lg:p-7"
           >
-
             {/* HEADER */}
 
-            <div className="mb-5 flex items-center justify-between gap-4">
+            <div className="mb-5 flex items-center gap-3">
               <div className="flex items-center gap-3">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#F4F2FF] text-[#7667E8]">
                   <i className="bi bi-search" />
@@ -1140,10 +1187,6 @@ const HomePage = ({ isDark = false }) => {
                     Enter your bus number and route.
                   </p>
                 </div>
-              </div>
-
-              <div className="hidden rounded-full bg-[#F7F8FC] px-2.5 py-1.5 text-[10px] font-extrabold text-[#8B93A3] sm:block">
-                {buses.length} approved services
               </div>
             </div>
 
@@ -1167,14 +1210,17 @@ const HomePage = ({ isDark = false }) => {
               noValidate
               className="space-y-4"
             >
-
               {/* =================================================
                   1. BUS NUMBER
               ================================================= */}
 
               <div className="relative z-[100]">
-                <label className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-[0.08em] text-[#6B7280]">
+                <label
+                  htmlFor="bus-number"
+                  className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-[0.08em] text-[#6B7280]"
+                >
                   Bus Number
+
                   <span className="ml-1 text-[#7667E8]">
                     *
                   </span>
@@ -1187,6 +1233,7 @@ const HomePage = ({ isDark = false }) => {
 
                   <input
                     type="text"
+                    id="bus-number"
                     value={busNumber}
                     autoComplete="off"
                     maxLength={20}
@@ -1244,11 +1291,13 @@ const HomePage = ({ isDark = false }) => {
               ================================================= */}
 
               <div className="grid gap-3 md:grid-cols-[1fr_44px_1fr] md:items-end">
-
                 {/* FROM */}
 
                 <div className="relative z-[80]">
-                  <label className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-[0.08em] text-[#6B7280]">
+                  <label
+                    htmlFor="from-place"
+                    className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-[0.08em] text-[#6B7280]"
+                  >
                     From
                   </label>
 
@@ -1259,6 +1308,7 @@ const HomePage = ({ isDark = false }) => {
 
                     <input
                       type="text"
+                      id="from-place"
                       value={startPoint}
                       autoComplete="off"
                       maxLength={60}
@@ -1281,38 +1331,18 @@ const HomePage = ({ isDark = false }) => {
                       className="h-12 w-full rounded-xl border border-[#E7E7EF] bg-white pl-14 pr-4 text-sm font-semibold text-[#111827] outline-none transition placeholder:text-[#A3A8B5] hover:border-[#DDD8FA] focus:border-[#7667E8] focus:bg-[#FCFBFF] focus:ring-4 focus:ring-[#7667E8]/[0.08]"
                     />
 
-                    {activeInput ===
-                      "departure" &&
-                      startSuggestions.length >
-                        0 && (
-                        <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-[999] max-h-[230px] overflow-y-auto rounded-[14px] border border-[#E7E7EF] bg-white p-1.5 shadow-[0_18px_45px_rgba(15,23,42,0.12)]">
-                          {startSuggestions.map(
-                            (city) => (
-                              <button
-                                key={city}
-                                type="button"
-                                onClick={() => {
-                                  setStartPoint(
-                                    city
-                                  );
-
-                                  setActiveInput(
-                                    null
-                                  );
-                                }}
-                                className="flex min-h-[44px] w-full items-center gap-2.5 rounded-[10px] px-3 py-2 text-left text-xs font-semibold text-[#374151] transition hover:bg-[#F4F2FF] hover:text-[#7667E8]"
-                              >
-                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#F4F2FF] text-[#7667E8]">
-                                  <i className="bi bi-geo-alt-fill text-xs" />
-                                </span>
-
-                                <span className="truncate">
-                                  {city}
-                                </span>
-                              </button>
-                            )
-                          )}
-                        </div>
+                    {activeInput === "departure" &&
+                      startSuggestions.length > 0 && (
+                        <PlaceSuggestions
+                          items={
+                            startSuggestions
+                          }
+                          iconClass="bi-geo-alt-fill"
+                          onSelect={(city) => {
+                            setStartPoint(city);
+                            setActiveInput(null);
+                          }}
+                        />
                       )}
                   </div>
                 </div>
@@ -1351,7 +1381,10 @@ const HomePage = ({ isDark = false }) => {
                 {/* TO */}
 
                 <div className="relative z-[70]">
-                  <label className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-[0.08em] text-[#6B7280]">
+                  <label
+                    htmlFor="to-place"
+                    className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-[0.08em] text-[#6B7280]"
+                  >
                     To
                   </label>
 
@@ -1362,6 +1395,7 @@ const HomePage = ({ isDark = false }) => {
 
                     <input
                       type="text"
+                      id="to-place"
                       value={destination}
                       autoComplete="off"
                       maxLength={60}
@@ -1384,38 +1418,21 @@ const HomePage = ({ isDark = false }) => {
                       className="h-12 w-full rounded-xl border border-[#E7E7EF] bg-white pl-14 pr-4 text-sm font-semibold text-[#111827] outline-none transition placeholder:text-[#A3A8B5] hover:border-[#DDD8FA] focus:border-[#7667E8] focus:bg-[#FCFBFF] focus:ring-4 focus:ring-[#7667E8]/[0.08]"
                     />
 
-                    {activeInput ===
-                      "arrival" &&
+                    {activeInput === "arrival" &&
                       destinationSuggestions.length >
                         0 && (
-                        <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-[999] max-h-[230px] overflow-y-auto rounded-[14px] border border-[#E7E7EF] bg-white p-1.5 shadow-[0_18px_45px_rgba(15,23,42,0.12)]">
-                          {destinationSuggestions.map(
-                            (city) => (
-                              <button
-                                key={city}
-                                type="button"
-                                onClick={() => {
-                                  setDestination(
-                                    city
-                                  );
-
-                                  setActiveInput(
-                                    null
-                                  );
-                                }}
-                                className="flex min-h-[44px] w-full items-center gap-2.5 rounded-[10px] px-3 py-2 text-left text-xs font-semibold text-[#374151] transition hover:bg-[#F4F2FF] hover:text-[#7667E8]"
-                              >
-                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#F4F2FF] text-[#7667E8]">
-                                  <i className="bi bi-geo-fill text-xs" />
-                                </span>
-
-                                <span className="truncate">
-                                  {city}
-                                </span>
-                              </button>
-                            )
-                          )}
-                        </div>
+                        <PlaceSuggestions
+                          items={
+                            destinationSuggestions
+                          }
+                          iconClass="bi-geo-fill"
+                          onSelect={(city) => {
+                            setDestination(city);
+                            setActiveInput(
+                              null
+                            );
+                          }}
+                        />
                       )}
                   </div>
                 </div>
@@ -1428,6 +1445,7 @@ const HomePage = ({ isDark = false }) => {
               <div className="relative z-[50]">
                 <label className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-[0.08em] text-[#6B7280]">
                   Timing
+
                   <span className="ml-1.5 text-[9px] font-semibold normal-case tracking-normal text-[#A3A8B5]">
                     optional
                   </span>
@@ -1474,7 +1492,10 @@ const HomePage = ({ isDark = false }) => {
 
                 {activeInput ===
                   "timeFilter" && (
-                  <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-[999] rounded-[14px] border border-[#E7E7EF] bg-white p-1.5 shadow-[0_18px_45px_rgba(15,23,42,0.12)]">
+                  <div
+                    role="listbox"
+                    className="absolute left-0 right-0 top-[calc(100%+6px)] z-[999] rounded-[14px] border border-[#E7E7EF] bg-white p-1.5 shadow-[0_18px_45px_rgba(15,23,42,0.12)]"
+                  >
                     {timingOptions.map(
                       (option) => (
                         <button
@@ -1508,9 +1529,7 @@ const HomePage = ({ isDark = false }) => {
                             className={`bi ${option.icon} w-5 text-center`}
                           />
 
-                          {
-                            option.label
-                          }
+                          {option.label}
                         </button>
                       )
                     )}
@@ -1565,6 +1584,7 @@ const HomePage = ({ isDark = false }) => {
                   onClick={
                     toggleSaveRoute
                   }
+                  disabled={isSaving}
                   aria-label={
                     isCurrentRouteSaved
                       ? "Remove saved route"
@@ -1607,7 +1627,6 @@ const HomePage = ({ isDark = false }) => {
                   </span>
                 </button>
               </div>
-
             </form>
           </div>
         </section>
@@ -1619,7 +1638,6 @@ const HomePage = ({ isDark = false }) => {
         {!hasSearched && (
           <section className="mx-auto max-w-4xl px-5 pb-16 pt-8 sm:px-8 sm:pt-10 lg:px-10">
             <div className="grid gap-3 sm:grid-cols-3">
-
               <div className="rounded-2xl border border-[#E7E7EF] bg-white p-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#F4F2FF] text-[#7667E8]">
                   <i className="bi bi-bus-front-fill text-sm" />
@@ -1664,7 +1682,6 @@ const HomePage = ({ isDark = false }) => {
                   evening or night.
                 </p>
               </div>
-
             </div>
           </section>
         )}
@@ -1761,7 +1778,6 @@ const HomePage = ({ isDark = false }) => {
             aria-live="polite"
             className="mx-auto max-w-4xl px-5 pb-20 pt-10 sm:px-8 lg:px-10"
           >
-
             {/* RESULTS HEADER */}
 
             <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -1796,10 +1812,8 @@ const HomePage = ({ isDark = false }) => {
 
             {/* RESULTS */}
 
-            {matchedRoutes.length >
-            0 ? (
+            {matchedRoutes.length > 0 ? (
               <div className="space-y-4">
-
                 {matchedRoutes.map(
                   (route) => {
                     const expanded =
@@ -1811,7 +1825,6 @@ const HomePage = ({ isDark = false }) => {
                         key={route.id}
                         className="overflow-hidden rounded-2xl border border-[#E7E7EF] bg-white shadow-[0_8px_28px_rgba(17,24,39,0.045)]"
                       >
-
                         <button
                           type="button"
                           onClick={() =>
@@ -1855,10 +1868,9 @@ const HomePage = ({ isDark = false }) => {
                             basePrice={
                               route.basePrice
                             }
-                            seats={
-                              route.seats
+                            isDark={
+                              isDark
                             }
-                            isDark={isDark}
                             isMinimal={
                               !expanded
                             }
@@ -1877,7 +1889,6 @@ const HomePage = ({ isDark = false }) => {
                             />
                           </div>
                         )}
-
                       </div>
                     );
                   }
@@ -1896,11 +1907,9 @@ const HomePage = ({ isDark = false }) => {
                     label="Toggle"
                   />
                 </div>
-
               </div>
             ) : (
               <div className="rounded-[22px] border border-[#E7E7EF] bg-white px-6 py-12 text-center shadow-[0_8px_28px_rgba(17,24,39,0.04)]">
-
                 <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#F4F2FF] text-2xl text-[#7667E8]">
                   <i className="bi bi-bus-front" />
                 </div>
@@ -1925,13 +1934,10 @@ const HomePage = ({ isDark = false }) => {
                   <i className="bi bi-arrow-left mr-2" />
                   Search Again
                 </button>
-
               </div>
             )}
-
           </section>
         )}
-
       </main>
     </div>
   );

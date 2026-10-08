@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import font206 from "./assets/10_உழவன் தமிழ்.ttf";
 
-const PrivacyPolicy = ({ isDark = false }) => {
+const Disclaimer = ({ isDark = false }) => {
   const navigate = useNavigate();
 
   return (
@@ -13,20 +13,19 @@ const PrivacyPolicy = ({ isDark = false }) => {
           @font-face {
             font-family: "DPI206";
             src: url("${font206}") format("truetype");
-            font-weight: 400;
+            font-weight: 100 900;
             font-style: normal;
             font-display: swap;
           }
 
-          .privacy-title-font {
+          .disclaimer-page {
             font-family: "DPI206", sans-serif;
           }
-
         `}
       </style>
 
       <div
-        className={`min-h-screen w-full transition-colors duration-300 ${
+        className={`disclaimer-page min-h-screen w-full transition-colors duration-300 ${
           isDark
             ? "bg-gray-950 text-gray-100"
             : "bg-[#FBFBFD] text-[#17162A]"
@@ -44,7 +43,7 @@ const PrivacyPolicy = ({ isDark = false }) => {
                 : "border-[#EAE9F1] bg-white text-[#5B5A6E] hover:bg-[#F4F2FF] hover:text-[#6D5CE7]"
             }`}
           >
-            <i className="bi bi-arrow-left"></i>
+            <i className="bi bi-arrow-left" />
             <span>Back</span>
           </button>
 
@@ -60,7 +59,9 @@ const PrivacyPolicy = ({ isDark = false }) => {
             {/* Header */}
             <div
               className={`border-b px-6 py-7 sm:px-8 sm:py-8 lg:px-10 ${
-                isDark ? "border-gray-800" : "border-[#EAE9F1]"
+                isDark
+                  ? "border-gray-800"
+                  : "border-[#EAE9F1]"
               }`}
             >
               <div className="flex items-start gap-4">
@@ -68,29 +69,37 @@ const PrivacyPolicy = ({ isDark = false }) => {
                 {/* Disclaimer Icon */}
                 <div
                   className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${
-                    isDark ? "bg-[#302A5F]" : "bg-[#F1EFFC]"
+                    isDark
+                      ? "bg-[#302A5F]"
+                      : "bg-[#F1EFFC]"
                   }`}
                 >
                   <i
                     className={`bi bi-exclamation text-xl ${
-                      isDark ? "text-[#AFA6FF]" : "text-[#6D5CE7]"
+                      isDark
+                        ? "text-[#AFA6FF]"
+                        : "text-[#6D5CE7]"
                     }`}
-                  ></i>
+                  />
                 </div>
 
                 {/* Title */}
                 <div className="min-w-0">
                   <h1
-                    className={`privacy-title-font text-3xl leading-tight sm:text-4xl ${
-                      isDark ? "text-white" : "text-[#17162A]"
+                    className={`text-3xl leading-tight sm:text-4xl ${
+                      isDark
+                        ? "text-white"
+                        : "text-[#17162A]"
                     }`}
                   >
-                    DPI One - Privacy Policy
+                    DPI One - Disclaimer
                   </h1>
 
                   <p
-                    className={` mt-2 text-sm ${
-                      isDark ? "text-gray-400" : "text-[#9997A8]"
+                    className={`mt-2 text-sm ${
+                      isDark
+                        ? "text-gray-400"
+                        : "text-[#9997A8]"
                     }`}
                   >
                     கடைசியாக புதுப்பிக்கப்பட்டது: அக்டோபர் 2026
@@ -106,90 +115,286 @@ const PrivacyPolicy = ({ isDark = false }) => {
 
                 {/* Section 1 */}
                 <section>
-                  <h2 className={`privacy-title-font mb-3 text-xl sm:text-2xl ${isDark ? "text-white" : "text-[#17162A]"}`}>
-                    1. பொதுத் தகவல் &amp; நோக்கம் (Overview)
+                  <h2
+                    className={`mb-3 text-xl sm:text-2xl ${
+                      isDark
+                        ? "text-white"
+                        : "text-[#17162A]"
+                    }`}
+                  >
+                    1. பொதுத் தகவல்
                   </h2>
-                  <p className={`text-base leading-8 ${isDark ? "text-gray-300" : "text-[#5B5A6E]"}`}>
-                    DPI One செயலியானது பொதுப் பேருந்து வழித்தடங்கள், நேரங்கள் மற்றும் நிறுத்தங்கள் தொடர்பான தகவல்களைப் பயணிகளுக்கு எளிதாக வழங்குவதற்காக உருவாக்கப்பட்ட ஒரு பொது வழிகாட்டி தளமாகும். பயணிகளின் தனியுரிமையைப் பாதுகாப்பதில் நாங்கள் முழு அர்ப்பணிப்புடன் செயல்படுகிறோம்.
+
+                  <p
+                    className={`text-base leading-8 ${
+                      isDark
+                        ? "text-gray-300"
+                        : "text-[#5B5A6E]"
+                    }`}
+                  >
+                    DPI One என்பது தர்மபுரி மற்றும் சுற்றுப்புற
+                    பகுதிகளில் இயங்கும் பேருந்துகளின் வழித்தடங்கள்,
+                    நேரங்கள், நிறுத்தங்கள் மற்றும் தொடர்புடைய
+                    பொதுப் போக்குவரத்து தகவல்களை பயணிகளுக்கு
+                    எளிதாகக் காண்பிக்க உருவாக்கப்பட்ட ஒரு தகவல்
+                    வழிகாட்டி தளமாகும்.
                   </p>
                 </section>
 
-                <div className={`h-px w-full ${isDark ? "bg-gray-800" : "bg-[#EAE9F1]"}`} />
+                <div
+                  className={`h-px w-full ${
+                    isDark
+                      ? "bg-gray-800"
+                      : "bg-[#EAE9F1]"
+                  }`}
+                />
 
                 {/* Section 2 */}
                 <section>
-                  <h2 className={`privacy-title-font mb-3 text-xl sm:text-2xl ${isDark ? "text-white" : "text-[#17162A]"}`}>
-                    2. தனிப்பட்ட தரவு சேகரிப்பு இன்மை (No Personal Data Collection)
+                  <h2
+                    className={`mb-3 text-xl sm:text-2xl ${
+                      isDark
+                        ? "text-white"
+                        : "text-[#17162A]"
+                    }`}
+                  >
+                    2. பேருந்து தகவல்களின் துல்லியம்
                   </h2>
-                  <p className={`text-base leading-8 ${isDark ? "text-gray-300" : "text-[#5B5A6E]"}`}>
-                    DPI One பயனர்களிடமிருந்து எந்தவொரு தனிப்பட்ட அடையாளத் தகவல்களையும் (Personal Identifiable Information - PII) கோருவதோ, சேகரிப்பதோ அல்லது கண்காணிப்பதோ இல்லை.
+
+                  <p
+                    className={`text-base leading-8 ${
+                      isDark
+                        ? "text-gray-300"
+                        : "text-[#5B5A6E]"
+                    }`}
+                  >
+                    DPI One-ல் காட்டப்படும் பேருந்து நேரங்கள்,
+                    வழித்தடங்கள், நிறுத்தங்கள், கட்டணங்கள் மற்றும்
+                    பிற தகவல்கள் காலப்போக்கில் மாறக்கூடும்.
+                    போக்குவரத்து நிர்வாக மாற்றங்கள், பேருந்து
+                    இயக்க மாற்றங்கள், தாமதங்கள், ரத்து செய்யப்படுதல்
+                    அல்லது பிற காரணங்களால் இணையதளத்தில் காணப்படும்
+                    தகவல்களுக்கும் உண்மையான சேவைக்கும் வேறுபாடு
+                    இருக்கலாம்.
                   </p>
-                  <p className={`mt-3 text-base leading-8 ${isDark ? "text-gray-300" : "text-[#5B5A6E]"}`}>
-                    பயனர்களின் பின்வரும் எந்தத் தரவுகளும் எங்கள் சேவையகங்களில் சேமிக்கப்படுவதில்லை:
+
+                  <p
+                    className={`mt-3 text-base leading-8 ${
+                      isDark
+                        ? "text-gray-300"
+                        : "text-[#5B5A6E]"
+                    }`}
+                  >
+                    எனவே பயணத்தைத் தொடங்குவதற்கு முன் தேவையான
+                    தகவல்களை சம்பந்தப்பட்ட பேருந்து சேவை அல்லது
+                    அதிகாரப்பூர்வ ஆதாரத்துடன் உறுதிப்படுத்துவது
+                    பயனுள்ளதாகும்.
                   </p>
-                  <ul className={`mt-3 list-disc space-y-2 pl-6 text-base leading-8 ${isDark ? "text-gray-300" : "text-[#5B5A6E]"}`}>
-                    <li>பெயர், மின்னஞ்சல் முகவரி அல்லது தொடர்பு எண்கள்</li>
-                    <li>பயனர் கணக்கு விவரங்கள் (User Account / Profile Data)</li>
-                    <li>பிற தனிப்பட்ட அடையாளத் தகவல்கள்</li>
-                  </ul>
                 </section>
 
-                <div className={`h-px w-full ${isDark ? "bg-gray-800" : "bg-[#EAE9F1]"}`} />
+                <div
+                  className={`h-px w-full ${
+                    isDark
+                      ? "bg-gray-800"
+                      : "bg-[#EAE9F1]"
+                  }`}
+                />
 
                 {/* Section 3 */}
                 <section>
-                  <h2 className={`privacy-title-font mb-3 text-xl sm:text-2xl ${isDark ? "text-white" : "text-[#17162A]"}`}>
-                    3. சேமிக்கப்படும் தரவுகள் (Public Transit Data Only)
+                  <h2
+                    className={`mb-3 text-xl sm:text-2xl ${
+                      isDark
+                        ? "text-white"
+                        : "text-[#17162A]"
+                    }`}
+                  >
+                    3. பயனர் சமர்ப்பிக்கும் தகவல்கள்
                   </h2>
-                  <p className={`text-base leading-8 ${isDark ? "text-gray-300" : "text-[#5B5A6E]"}`}>
-                    DPI One தளத்தில் இடம்பெற்றுள்ள அனைத்துத் தரவுகளும் பொதுப் போக்குவரத்து தொடர்பானவை மட்டுமே:
+
+                  <p
+                    className={`text-base leading-8 ${
+                      isDark
+                        ? "text-gray-300"
+                        : "text-[#5B5A6E]"
+                    }`}
+                  >
+                    DPI One-க்கு பயனர்கள் சமர்ப்பிக்கும் பேருந்து
+                    தகவல்கள் முதலில் சரிபார்ப்பு செயல்முறைக்கு
+                    உட்படுத்தப்படலாம். சமர்ப்பிக்கப்பட்ட தகவல்கள்
+                    சரிபார்க்கப்பட்ட பின்னரே பொதுப் பயன்பாட்டில்
+                    காட்டப்படலாம்.
                   </p>
-                  <ul className={`mt-3 list-disc space-y-2 pl-6 text-base leading-8 ${isDark ? "text-gray-300" : "text-[#5B5A6E]"}`}>
-                    <li>பேருந்து வழித்தடங்கள் மற்றும் எண்கள் (Bus Routes &amp; Numbers)</li>
-                    <li>தொடக்க இடம் மற்றும் சேருமிடம் (Origin &amp; Destination)</li>
-                    <li>அட்டவணைப்படுத்தப்பட்ட பேருந்து நேரங்கள் (Schedules &amp; Timings)</li>
-                    <li>பேருந்து நிறுத்தங்களின் விவரங்கள் (Bus Stops)</li>
-                  </ul>
-                  <p className={`mt-3 text-base leading-8 ${isDark ? "text-gray-300" : "text-[#5B5A6E]"}`}>
-                    இந்தத் தகவல்கள் பொதுப் பயணிகள் தங்களின் பயணத்தைத் திட்டமிடுவதற்கு மட்டுமே பயன்படுத்தப்படுகின்றன.
+
+                  <p
+                    className={`mt-3 text-base leading-8 ${
+                      isDark
+                        ? "text-gray-300"
+                        : "text-[#5B5A6E]"
+                    }`}
+                  >
+                    தவறான, போலியான, முழுமையற்ற அல்லது உறுதி செய்யப்படாத
+                    தகவல்களைப் பகிர்வதைத் தவிர்க்கவும்.
                   </p>
                 </section>
 
-                <div className={`h-px w-full ${isDark ? "bg-gray-800" : "bg-[#EAE9F1]"}`} />
+                <div
+                  className={`h-px w-full ${
+                    isDark
+                      ? "bg-gray-800"
+                      : "bg-[#EAE9F1]"
+                  }`}
+                />
 
                 {/* Section 4 */}
                 <section>
-                  <h2 className={`privacy-title-font mb-3 text-xl sm:text-2xl ${isDark ? "text-white" : "text-[#17162A]"}`}>
-                    4. பயனர் சமர்ப்பிக்கும் தகவல்கள் (User Contributions)
+                  <h2
+                    className={`mb-3 text-xl sm:text-2xl ${
+                      isDark
+                        ? "text-white"
+                        : "text-[#17162A]"
+                    }`}
+                  >
+                    4. பயண முடிவுகளுக்கான பொறுப்பு
                   </h2>
-                  <p className={`text-base leading-8 ${isDark ? "text-gray-300" : "text-[#5B5A6E]"}`}>
-                    பயனர்கள் ஏதேனும் புதிய பேருந்து தகவல்களையோ அல்லது வழித்தடத் திருத்தங்களையோ சமர்ப்பிக்கும் பட்சத்தில், பேருந்து சேவை சார்ந்த பொதுத் தகவல்கள் மட்டுமே கணக்கில் எடுத்துக்கொள்ளப்படும். தனிப்பட்ட தகவல்கள் ஏதேனும் தவறுதலாக இணைக்கப்பட்டிருந்தால் அவை உடனடியாக நிராகரிக்கப்படும்.
+
+                  <p
+                    className={`text-base leading-8 ${
+                      isDark
+                        ? "text-gray-300"
+                        : "text-[#5B5A6E]"
+                    }`}
+                  >
+                    DPI One வழங்கும் தகவல்களை அடிப்படையாகக் கொண்டு
+                    பயணத்தைத் திட்டமிடும் போது இறுதி முடிவு
+                    பயனருடையதாகும். பேருந்து சேவை தாமதம்,
+                    மாற்றம், ரத்து, தவறவிடுதல் அல்லது வேறு
+                    போக்குவரத்து சிக்கல்களுக்கு DPI One பொறுப்பாகாது.
                   </p>
                 </section>
 
-                <div className={`h-px w-full ${isDark ? "bg-gray-800" : "bg-[#EAE9F1]"}`} />
+                <div
+                  className={`h-px w-full ${
+                    isDark
+                      ? "bg-gray-800"
+                      : "bg-[#EAE9F1]"
+                  }`}
+                />
 
                 {/* Section 5 */}
                 <section>
-                  <h2 className={`privacy-title-font mb-3 text-xl sm:text-2xl ${isDark ? "text-white" : "text-[#17162A]"}`}>
-                    5. தரவுப் பகிர்வு மற்றும் மூன்றாம் தரப்பு சேவைகள் (Data Sharing)
+                  <h2
+                    className={`mb-3 text-xl sm:text-2xl ${
+                      isDark
+                        ? "text-white"
+                        : "text-[#17162A]"
+                    }`}
+                  >
+                    5. வெளிப்புற சேவைகள்
                   </h2>
-                  <p className={`text-base leading-8 ${isDark ? "text-gray-300" : "text-[#5B5A6E]"}`}>
-                    நாங்கள் பயனர்களின் எந்தவொரு தரவையும் வணிக ரீதியாக விற்பனை செய்வதோ, வாடகைக்கு விடுவதோ அல்லது விளம்பர நிறுவனங்களுக்குப் பகிர்வதோ இல்லை.
+
+                  <p
+                    className={`text-base leading-8 ${
+                      isDark
+                        ? "text-gray-300"
+                        : "text-[#5B5A6E]"
+                    }`}
+                  >
+                    DPI One-ல் குறிப்பிடப்படும் அல்லது இணைக்கப்படும்
+                    வெளிப்புற சேவைகள், நிறுவனங்கள் அல்லது மூன்றாம்
+                    தரப்பு ஆதாரங்களின் செயல்பாடு, துல்லியம் அல்லது
+                    கிடைக்கும் தன்மைக்கு DPI One பொறுப்பேற்காது.
                   </p>
                 </section>
 
-                <div className={`h-px w-full ${isDark ? "bg-gray-800" : "bg-[#EAE9F1]"}`} />
+                <div
+                  className={`h-px w-full ${
+                    isDark
+                      ? "bg-gray-800"
+                      : "bg-[#EAE9F1]"
+                  }`}
+                />
 
                 {/* Section 6 */}
                 <section>
-                  <h2 className={`privacy-title-font mb-3 text-xl sm:text-2xl ${isDark ? "text-white" : "text-[#17162A]"}`}>
-                    6. மாற்றங்கள் (Policy Updates)
+                  <h2
+                    className={`mb-3 text-xl sm:text-2xl ${
+                      isDark
+                        ? "text-white"
+                        : "text-[#17162A]"
+                    }`}
+                  >
+                    6. தகவல் மாற்றங்கள்
                   </h2>
-                  <p className={`text-base leading-8 ${isDark ? "text-gray-300" : "text-[#5B5A6E]"}`}>
-                    செயலியின் அம்சங்கள் அல்லது ஒழுங்குமுறை விதிகளுக்கு ஏற்ப இந்தத் தனியுரிமைக் கொள்கை அவ்வப்போது புதுப்பிக்கப்படலாம். மாற்றங்கள் அனைத்தும் இந்தப் பக்கத்தில் உடனுக்குடன் திருத்தப்பட்டு தேதி குறிப்பிடப்படும்.
+
+                  <p
+                    className={`text-base leading-8 ${
+                      isDark
+                        ? "text-gray-300"
+                        : "text-[#5B5A6E]"
+                    }`}
+                  >
+                    பேருந்து வழித்தடங்கள், நேரங்கள், நிறுத்தங்கள்
+                    மற்றும் பிற போக்குவரத்து தகவல்கள் எந்த நேரத்திலும்
+                    மாற்றப்படலாம். DPI One-ல் உள்ள தகவல்களும்
+                    தேவைக்கேற்ப புதுப்பிக்கப்படலாம் அல்லது
+                    திருத்தப்படலாம்.
                   </p>
                 </section>
+
+                <div
+                  className={`h-px w-full ${
+                    isDark
+                      ? "bg-gray-800"
+                      : "bg-[#EAE9F1]"
+                  }`}
+                />
+
+                {/* Important Notice */}
+                <section
+                  className={`rounded-2xl border p-5 ${
+                    isDark
+                      ? "border-[#4A456F] bg-[#201D35]"
+                      : "border-[#DDD8FA] bg-[#F7F5FF]"
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+
+                    <i
+                      className={`bi bi-exclamation text-lg ${
+                        isDark
+                          ? "text-[#AFA6FF]"
+                          : "text-[#6D5CE7]"
+                      }`}
+                    />
+
+                    <div>
+                      <h3
+                        className={`text-base ${
+                          isDark
+                            ? "text-white"
+                            : "text-[#17162A]"
+                        }`}
+                      >
+                        முக்கிய அறிவிப்பு
+                      </h3>
+
+                      <p
+                        className={`mt-2 text-sm leading-7 ${
+                          isDark
+                            ? "text-gray-300"
+                            : "text-[#5B5A6E]"
+                        }`}
+                      >
+                        DPI One ஒரு தகவல் வழிகாட்டி தளம் மட்டுமே.
+                        அதிகாரப்பூர்வ போக்குவரத்து நிறுவனத்தின்
+                        நேரடி மாற்றங்கள் அல்லது உடனடி அறிவிப்புகளுக்கு
+                        இது மாற்றாக கருதப்படக்கூடாது.
+                      </p>
+                    </div>
+                  </div>
+                </section>
+
               </div>
             </div>
           </div>
@@ -198,7 +403,9 @@ const PrivacyPolicy = ({ isDark = false }) => {
           <div className="py-8 text-center">
             <p
               className={`text-sm ${
-                isDark ? "text-gray-500" : "text-[#9997A8]"
+                isDark
+                  ? "text-gray-500"
+                  : "text-[#9997A8]"
               }`}
             >
               © 2026 DPI One. All rights reserved.
@@ -211,4 +418,4 @@ const PrivacyPolicy = ({ isDark = false }) => {
   );
 };
 
-export default PrivacyPolicy;
+export default Disclaimer;

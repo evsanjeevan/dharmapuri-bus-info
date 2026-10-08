@@ -7,16 +7,17 @@ import React, {
     useMemo
 } from "react";
 
-import { auth } from "./firebase.jsx";
+import { auth, db } from "./firebase.jsx";
 
 import {
     onAuthStateChanged
 } from "firebase/auth";
 
 import {
-    getFunctions,
-    httpsCallable
-} from "firebase/functions";
+    collection,
+    addDoc,
+    serverTimestamp
+} from "firebase/firestore";
 
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1494,19 +1495,23 @@ const UploadPage = ({
                 };
 
 
-                const functions =
-                    getFunctions();
+                await addDoc(
+                    collection(
+                        db,
+                        "busRoutes"
+                    ),
+                    {
+                        ...payload,
 
+                        uploadedBy:
+                            user.uid,
 
-                const uploadTransitRoute =
-                    httpsCallable(
-                        functions,
-                        "uploadTransitRoute"
-                    );
+                        status:
+                            "pending",
 
-
-                await uploadTransitRoute(
-                    payload
+                        createdAt:
+                            serverTimestamp()
+                    }
                 );
 
 
